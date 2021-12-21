@@ -6,7 +6,8 @@
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon ."
+    "start": "nodemon .",
+    "sass": "node-sass -w sass -o public/css"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -16,6 +17,7 @@
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "node-sass": "^7.0.0",
     "nodemon": "^2.0.15"
   }
 }
