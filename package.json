@@ -24,6 +24,7 @@
     "node-sass": "^7.0.0",
     "nodemon": "^2.0.15",
     "random-avatar": "^1.0.1",
+    "rebrandly": "^2.0.1",
     "util": "^0.12.4"
   }
 }
