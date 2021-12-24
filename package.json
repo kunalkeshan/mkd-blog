@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
-  "type": "module",
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
