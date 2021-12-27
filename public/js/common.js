@@ -1,1 +1,1 @@
-mayukh;
+console.log(mayukh);
