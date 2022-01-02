@@ -1,0 +1,14 @@
+.red {
+  background-color: red; }
+  .red .green {
+    color: green; }
+
+.primary-button {
+  border-radius: 10px;
+  background-color: red;
+  color: blue; }
+
+.calltoaction-button {
+  border-radius: 10px;
+  background-color: orange;
+  color: yellow; }
