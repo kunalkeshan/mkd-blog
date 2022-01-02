@@ -1,0 +1,12 @@
+
+Home <br />
+<button onclick="logout()">Logout</button>
+
+<%- include ("./partials/footer.ejs")  %> 
+
+<script>
+    const logout = async () => {
+        await axios.post("/logout");
+        window.location.replace("/")
+    }
+</script>

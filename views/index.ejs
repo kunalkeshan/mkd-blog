@@ -1,6 +1,42 @@
 
 <%- include ("./partials/headerLoggedOut.ejs")  %> 
 
-Index
+<form id="register"> 
+    <div>
+        <label for="name">
+            <input type="text" id="name" name="name" />
+        </label>
+    </div>
+    <div>
+        <label for="username">
+            <input type="text" id="username" name="username" />
+        </label>
+    </div>
+    <div>
+        <label for="email">
+            <input type="email" id="email" name="email" />
+        </label>
+    </div>
+    <div>
+        <label for="password">
+            <input type="password" id="password" name="password" />
+        </label>
+    </div>
+    <button type="submit">Register</button>
+</form>
+
+<form action="/login" method="post" id="login">
+    <div>
+        <label for="username">
+            <input type="text" id="username" name="username" />
+        </label>
+    </div>
+    <div>
+        <label for="password">
+            <input type="password" id="password" name="password" />
+        </label>
+    </div>
+    <button type="submit">Login</button>
+</form>
 
 <%- include ("./partials/footer.ejs")  %> 

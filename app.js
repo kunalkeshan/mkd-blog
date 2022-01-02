@@ -25,18 +25,18 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+    console.log(error)
     res.status(error.status || 500).render("serverError", {
         error: {
             status: error.status || 500,
             message: error.message || "Internal Server Error",
         },
     });
-
 })
 
 const PORT = process.env.PORT;
 
 app.listen(PORT, function(err){
-    if(err) console.error(`Error in running server! Error: ${err}`);
+    if(err) console.log(`Error in running server! Error: ${err}`);
     else console.log(`Server running at http://localhost:${PORT}`);
 })
