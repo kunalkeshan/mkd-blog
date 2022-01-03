@@ -2,6 +2,7 @@ const Router = require("express").Router();
 const { database, sendQuery } = require("../database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const randomAvatar = require("random-avatar");
 const { pageDetails, errorLogger, generateId, parseData, validateEmail } = require("../middleware/appFunctions");
 const {redirectToAuth, auth} = require("../middleware/auth");
 
@@ -39,9 +40,10 @@ Router.post("/register", async (req, res) => {
         if((!emailValidity && !usernameValidity) && isSaved){
             const userId = generateId();
             const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
+            const image = randomAvatar({protocol: "https", extension: "jpg"});
 
             // Query
-            const registerUser = `INSERT INTO user_details (userId, fullName, email, username, hashedPassword) VALUES ('${userId}', '${fullName}', '${email}', '${username}', '${hashedPassword}');`;
+            const registerUser = `INSERT INTO user_details (userId, fullName, email, username, hashedPassword, image) VALUES ('${userId}', '${fullName}', '${email}', '${username}', '${hashedPassword}', '${image}');`;
             let newUser = await sendQuery(registerUser);
 
             if(newUser.affectedRows > 0){
@@ -59,8 +61,6 @@ Router.post("/register", async (req, res) => {
     } catch(error) { 
         errorLogger("Index", error);
         res.status(400).json({message: "Something bad happened!"})
-    } finally {
-        database.end();
     }
 
 });
@@ -96,8 +96,6 @@ Router.post("/login", async (req, res) => {
     } catch(error) { 
         errorLogger("Login", error);
         res.status(400).json({message: "Something bad happened!"})
-    } finally {
-        database.end();
     }
     
 });
