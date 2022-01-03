@@ -1,6 +1,7 @@
 // Importing Packages
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 const path = require("path");
 const { port } = require("./src/helper/config");
 
@@ -12,6 +13,11 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(logger("tiny"));
+
+app.get("/", (req, res) => {
+    res.status(200).send("Hi")
+})
 
 app.use((req, res, next) => {
     const error = new Error("Not Found");

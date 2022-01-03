@@ -11,6 +11,7 @@
     "devStart": "nodemon ."
   },
   "dependencies": {
+    "agenda": "^4.2.1",
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.27.1",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
+    "morgan": "^1.10.0",
     "node-sass": "^7.0.1",
     "nodemon": "^2.0.15"
   }

@@ -7,16 +7,16 @@ const { database, nodeEnvironment } = require("../config");
 const isDevelopment = nodeEnvironment === "development";
 
 // Creating a Connection Instance
-const db = mysql.createConnection(isDevelopment ? database.development : database.production);    
+const dbConnect = mysql.createConnection(isDevelopment ? database.development : database.production);    
 
 // Creating a shortcut to send queries 
-const sendQuery = util.promisify(db.query).bind(db);
+const sendQuery = util.promisify(dbConnect.query).bind(dbConnect);
 
 // Connecting to the Database
-db.connect(function(err){
+dbConnect.connect(function(err){
     if(err) {
         console.log(err.message);
-        database.destroy();
+        dbConnect.destroy();
     } else {
         console.log("Connected to Database!")
     };
@@ -24,6 +24,6 @@ db.connect(function(err){
 
 // Exporting Connection instance and quick query. 
 module.exports = {
-    db,
+    dbConnect,
     sendQuery
 };

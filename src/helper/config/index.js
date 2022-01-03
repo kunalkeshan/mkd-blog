@@ -23,7 +23,12 @@ module.exports = {
         salt: process.env.SALT,
         nanoidLength: process.env.NANOID_LENGTH,
     },
-    apiKeys: {
-        
-    } 
+    cloudinary: {
+        cloudinaryUrl: process.env.CLOUDINARY_URL,
+        cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+    },
+    rebrandly: {
+        rebrandlyApiKey: process.env.REBRANDLY_API_KEY,
+    }
 }
