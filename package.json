@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node .",
-    "sass": "node-sass -w sass -o public/css",
+    "sass": "node-sass -w src/helper/sass -o public/css",
     "devStart": "nodemon ."
   },
   "dependencies": {
