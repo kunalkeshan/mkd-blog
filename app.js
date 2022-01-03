@@ -2,7 +2,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-require("dotenv").config();
+const { port } = require("./src/helper/config");
 
 // Initializing Express Application
 const app = express();
@@ -12,11 +12,6 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-
-// Importing Router
-const appRouter = require("./routes/routes");
-
-app.use(appRouter);
 
 app.use((req, res, next) => {
     const error = new Error("Not Found");
@@ -34,9 +29,7 @@ app.use((error, req, res, next) => {
     });
 })
 
-const PORT = process.env.PORT;
-
-app.listen(PORT, function(err){
+app.listen(port, function(err){
     if(err) console.log(`Error in running server! Error: ${err}`);
-    else console.log(`Server running at http://localhost:${PORT}`);
+    else console.log(`Server running at http://localhost:${port}`);
 })
