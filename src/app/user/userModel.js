@@ -14,12 +14,11 @@ class User {
         this.fullName = fullName;
         this.email = email;
         this.hashedPassword = bcrypt.hashSync(password, saltRounds);
-        this.image = `https://avatars.dicebear.com/api/initials/${userInitials()}.svg`;
+        this.image = `https://avatars.dicebear.com/api/initials/${userInitials(this.fullName)}.svg`;
         
         
-        function userInitials(){
-            const name = fullName.split(" ");
-            return [name[0].charAt(0), name[1].charAt(0)].join("");
+        function userInitials(getName){
+            return getName.split(" ").map((name) => name.charAt(0)).join("");
         }
         
         const handleCreateUser = async () => {
