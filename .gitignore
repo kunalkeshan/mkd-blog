@@ -79,6 +79,10 @@ web_modules/
 .cache
 .parcel-cache
 
+# ClouodSQL GCP
+
+*.pem
+
 # Next.js build output
 .next
 out
