@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const path = require("path");
 const { port } = require("./src/helper/config");
-
+const User = require("./src/app/user/userModel");
 // Initializing Express Application
 const app = express();
 
@@ -16,7 +16,11 @@ app.use(cookieParser());
 app.use(logger("tiny"));
 
 app.get("/", (req, res) => {
-    res.status(200).send("Hi")
+    res.status(200).send("Hi");
+    
+    User.getUserWithUsername("kunal").then(user => {
+        console.log(user)
+    })
 })
 
 app.use((req, res, next) => {
