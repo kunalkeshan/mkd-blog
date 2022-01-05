@@ -16,7 +16,13 @@ module.exports = {
             password: process.env.DB_PROD_PASSWD,
             database: process.env.DB_PROD_DB_NAME,
         },
-        
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000,
+        },
+        dialect: "mysql",
     },
     secrets: {
         jwtSecret: process.env.JWT_SECRET,

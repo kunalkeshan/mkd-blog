@@ -21,13 +21,13 @@
     "jsonwebtoken": "^8.5.1",
     "marked": "^4.0.8",
     "moment": "^2.29.1",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nanoid": "^3.1.30",
     "nodemailer": "^6.7.2",
     "random-avatar": "^1.0.1",
     "rebrandly": "^2.0.1",
-    "turndown": "^7.1.1",
-    "util": "^0.12.4"
+    "sequelize": "^6.12.5",
+    "turndown": "^7.1.1"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",

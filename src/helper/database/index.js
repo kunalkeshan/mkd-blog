@@ -1,29 +1,38 @@
-// Importing Packages
-const mysql = require("mysql");
-const util = require("util");
-const { database, nodeEnvironment } = require("../config");
+// Importing Packages 
+const Sequelize = require("sequelize");
+const { database: db, nodeEnvironment } = require("../config");
 
-// Checking Development Environment
+// Checking Node Environment
 const isDevelopment = nodeEnvironment === "development";
 
-// Creating a Connection Instance
-const dbConnect = mysql.createConnection(isDevelopment ? database.development : database.production);    
+// Accessing Database Configs
+const { host, user, password, database: dbName} = isDevelopment ? db.development : db.production;
 
-// Creating a shortcut to send queries 
-const sendQuery = util.promisify(dbConnect.query).bind(dbConnect);
+// Creating Sequelize Connection
+const sequelize = new Sequelize(dbName, user, password, {
+    host: host,
+    dialect: db.dialect,
+    // operatorsAliases: false,
+    pool: {...db.pool},
+})
 
-// Connecting to the Database
-dbConnect.connect(function(err){
-    if(err) {
-        console.log(err.message);
-        dbConnect.destroy();
-    } else {
-        console.log("Connected to Database!")
-    };
-});
+// Authenticating and Syncing Sequelize Connection.  
+const authenticateConnectionAndSync = async () => {
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+        console.log(`Connected and Synced to ${dbName} Database!`)
+    } catch (error) {
+        console.log(`Error Connecting to ${dbName} Database with error: ${error}`)
+    }
+}
+authenticateConnectionAndSync();
 
-// Exporting Connection instance and quick query. 
-module.exports = {
-    dbConnect,
-    sendQuery
-};
+// Exporting Sequelize package and sequelize connection.
+const database = {
+    Sequelize,
+    sequelize,
+}
+module.exports = database;
+
+
