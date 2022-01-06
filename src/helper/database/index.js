@@ -14,6 +14,7 @@ const sequelize = new Sequelize(dbName, user, password, {
     dialect: db.dialect,
     // operatorsAliases: false,
     pool: {...db.pool},
+    logging: false,
 });
 
 // Authenticating and Syncing Sequelize Connection.  

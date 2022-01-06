@@ -11,8 +11,8 @@ class User extends Model{
     
     // Instance Methods
 
-    generateHashedPassword({password}){
-        this.hashedPassword = bcrypt.hashSync(password, saltRounds);
+    generateHashedPassword(){
+        this.hashedPassword = bcrypt.hashSync(this.hashedPassword, saltRounds);
     };
 
     generateDefaultAvatar(){
@@ -46,28 +46,14 @@ class User extends Model{
         };
     };
 
-    // Static Methods
-
-    /* 
-    * @params {string} username
-    * @params {string} email
-    * @returns {Object} checkExists with properties username and email, return value of boolean on check
-    */
-    static async checkUsernameAndEmailExists({username, email}){
-        const checkExists = {
-            username: false,
-            email: false,
-        }
-        try {
-            const usernameExists = await this.findAndCountAll({where: { username }});
-            const emailExists = await this.findAndCountAll({where: { email }});
-            if(usernameExists.count) checkExists.username = true;
-            if(emailExists.count) checkExists.email = true;
-            return checkExists;
-        } catch (error) {
-            console.log(`Error checking Username and Email: ${error}`);
-        }
+    authenticateUser({password}){
+        const valid =  bcrypt.compareSync(password, this.hashedPassword);
+        if(!valid) throw new Error("Invalid");
+        return true;
     }
+
+    // Static Methods
+    
 }
 
 User.init({
@@ -117,17 +103,15 @@ User.init({
     createdAt: "registeredAt",
     updatedAt: "lastLogin",
     hooks: {
-        afterCreate: (user, options) => {
-            user.convertToJSON(STRING_IN_DB);
+        beforeSave: (user, options) => {
             user.generateDefaultAvatar();
+            user.generateHashedPassword();
+            user.convertToString(STRING_IN_DB);
         },
         afterSave: (user, options) => {
             user.convertToJSON(STRING_IN_DB);
         },
-        beforeSave: (user, options) => {
-            user.convertToString(STRING_IN_DB);
-        },
-    }
+    },
 });
 
 module.exports = User;
