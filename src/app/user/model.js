@@ -20,6 +20,46 @@ class User extends Model{
     generateAuthToken(){
         return jwt.sign(this.toJSON(), jwtSecret, {expiresIn: "1d"});
     };
+
+    /* 
+    * @params {Array} Array of all Keys of the User object
+    */
+    convertToJSON(...args){
+        for(let prop in this.toJSON()){
+            args.forEach((arg) => {
+                this[prop] = arg === prop ? JSON.parse(this[prop]) : this[prop];                
+            });
+        };
+    };
+
+    /* 
+    * @params {Array} Array of all Keys of the User object
+    */
+    convertToString(...args){
+        for(let prop in this.toJSON()){
+            args.forEach((arg) => {
+                this[prop] = arg === prop ? JSON.stringify(this[prop]) : this[prop];                
+            })
+        }
+    }
+
+    // Static Methods
+
+    static async checkUsernameAndEmailExists({username, email}){
+        const checkExists = {
+            username: false,
+            email: false,
+        }
+        try {
+            const usernameExists = await this.findAndCountAll({where: { username }});
+            const emailExists = await this.findAndCountAll({where: { email }});
+            if(usernameExists.count) checkExists.username = true;
+            if(emailExists.count) checkExists.email = true;
+            return checkExists;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 User.init({
@@ -51,7 +91,7 @@ User.init({
     bio: {
         type: DataTypes.TEXT("long"),
         allowNull: false,
-        defaultValue: ""
+        defaultValue: "{\"headline\":\"\",\"about\":\"\"}",
     },
     image: {
         type: DataTypes.STRING,
@@ -66,7 +106,19 @@ User.init({
 }, {
     sequelize,
     modelName: "test_user_details",
-})
-
+    createdAt: "registeredAt",
+    updatedAt: "lastLogin",
+    hooks: {
+        afterCreate: (user, options) => {
+            user.convertToJSON("links", "bio");
+        },
+        afterSave: (user, options) => {
+            user.convertToJSON("links", "bio");
+        },
+        beforeSave: (user, options) => {
+            user.convertToString("links", "bio");
+        },
+    }
+});
 
 module.exports = User;

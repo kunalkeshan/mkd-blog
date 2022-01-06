@@ -3,6 +3,7 @@ require("dotenv").config();
 module.exports = {
     port: process.env.PORT,
     nodeEnvironment: process.env.NODE_ENV,
+    backendUrl: process.env.BACKEND_URL,
     database: {
         development: {
             host: process.env.DB_DEV_HOST, 

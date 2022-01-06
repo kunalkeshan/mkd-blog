@@ -1,7 +1,7 @@
 const {nanoid} = require("nanoid");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: { idLength } } = require("../../helper/config");
-const User = require("../user/model")
+const User = require("../user/model");
 
 class Article extends Model {
 
@@ -12,7 +12,6 @@ class Article extends Model {
 Article.init({
     articleId: {
         type: DataTypes.STRING(40),
-        allowNull: false,
         defaultValue: nanoid(idLength),
         primaryKey: true,
     },
