@@ -38,19 +38,19 @@ Users with or without the knowledge of Markdown can use the platform to create a
 
 ## Hosting Details
 
-|                          Server at Heroku |                       MySQL at (to be decided) |
+|                          Server at Heroku |                       MySQL at Planet Scale |
 | --- | --- |
-| Heroku is used to keep the server side up and running 24/7 and serve the application to the end user. | (To be decided) |
+| Heroku is used to keep the server side up and running 24/7 and serve the application to the end user. | Using Planet Scale MySQL managed Database to host the production database.  |
 
 ## Other Technologies Used
 
-| TailwindCSS | Rebrandly API | EditorJS |
+| TailwindCSS | Rebrandly API | EditorJS (or) TinyMCE |
 | --- | --- | --- |
-| Using tailwinds utility classes to create mockup in a quick and reliable manner. | To create short URLs for all articles.  | EditorJS used UI to edit text as per user requirements and allow to save and edit for later. Make it easier as we don’t have to implement our own text editor. Other than one for Markdown. |
+| Using tailwinds utility classes to create mockup in a quick and reliable manner. | To create short URLs for all articles.  | EditorJS or TinyMCE is UI to edit text as per user requirements and allow to save and edit for later. Make it easier as we don’t have to implement our own text editor. Other than one for Markdown. |
 
 | SASS (Syntactically awesome style sheets) |
 | --- |
-| SASS to organize styles and keep track of project related variables in a more organized manner |
+| SASS to organize styles and keep track of project related variables in a more organized manner. |
 
 # mkd-blog Features
 
@@ -83,8 +83,11 @@ Users with or without the knowledge of Markdown can use the platform to create a
 3. Archive written articles. 
 4. Allow Tags/Categories for articles. 
 5. Like a comment. 
-6. Implementing Editor.js to create easy to use Text Editor. 
-7. Light and Dark Mode Toggle Feature. 
+6. Implementing Editor.js Or TinyMCE to create easy to use Text Editor. 
+7. Light and Dark Mode Toggle Feature.
+8. Share to Social Media buttons. Copy it to Clipboard. 
+9. Highlight text and options to share it on twitter, and other social media along with copy to clipboard option.   
+10. Embed Article Option.
 
 # mkd-blog Core Logic and Maintenance
 
@@ -92,15 +95,155 @@ Users with or without the knowledge of Markdown can use the platform to create a
 
 ## Logic
 
+- Pages
+    
+    `/` Index Page. Landing Without Signup or Login.
+    
+    `/home` Home Page. Landing After Signup or Login is authenticated.
+    
+- Routes
+    - Open / Default
+        
+        `GET` / - Index - Landing page without signup. 
+        
+        `POST` /login - Login Existing User.
+        
+        `POST` /register - Register a new User.
+        
+    - User
+        
+        `GET` /user/me - Get the profile the logged in user.
+        
+        `GET` /user/:username - Get the Profile of a user by username.
+        
+    - Article
+    - Comments
+    - Features
+        - Tags
+            
+            
+        - Categories
+        - Follow
+        - Bookmark
+
 ## Database Schema
 
-- v1.0 as on
-    
-    [https://www.notion.so](https://www.notion.so)
+- v1.0 as on 31st December 2021
     
     ```sql
+    CREATE DATABASE mkd_blog;
     
+    USE mkd_blog;
+    
+    /* User Details Table */
+    
+    CREATE TABLE user_details (
+    	userId VARCHAR(40) PRIMARY KEY,
+    	fullName TINYTEXT NOT NULL,
+    	username TINYTEXT NOT NULL,
+    	email TINYTEXT NOT NULL,
+    	bio MEDIUMTEXT NOT NULL,
+    	links TEXT NOT NULL,
+    	image TEXT NOT NULL,
+    	hashedPassword TINYTEXT NOT NULL,
+    	registerdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    	lastLogin TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    );
+    
+    /* Article Table */
+    
+    CREATE TABLE articles (
+    	articleId VARCHAR(40) PRIMARY KEY,
+    	userId VARCHAR(40) NOT NULL,
+    	title TEXT NOT NULL,
+    	body LONGTEXT NOT NULL,
+    	isPublished BIT DEFAULT 0,
+    	createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    	lastModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    	publishedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    	FOREIGN KEY (userId) REFERENCES user_details(userId) ON DELETE CASCADE
+    );
+    
+    /* Comments Table */
+    
+    CREATE TABLE article_comments (
+    	commentId VARCHAR(40) PRIMARY KEY,
+    	userId VARCHAR(40) NOT NULL,
+    	articleId VARCHAR(40) NOT NULL,
+    	commentContent MEDIUMTEXT NOT NULL,
+    	FOREIGN KEY (userId) REFERENCES user_details(userId) ON DELETE CASCADE,
+    	FOREIGN KEY (articleId) REFERENCES articles(articleId) ON DELETE CASCADE
+    );
+    
+    /* Likes Table */
+    
+    CREATE TABLE article_likes (
+    	likeId INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	articleId VARCHAR(40) NOT NULL,
+    	userId VARCHAR(40) NOT NULL,
+    	FOREIGN KEY (userId) REFERENCES user_details(userId) ON DELETE CASCADE,
+    	FOREIGN KEY (articleId) REFERENCES articles(articleId) ON DELETE CASCADE
+    );
+    
+    /* Comment Likes */
+    
+    CREATE TABLE comment_likes (
+    	likeId INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	commentId VARCHAR(40) NOT NULL,
+    	userId VARCHAR(40) NOT NULL,
+    	FOREIGN KEY (userId) REFERENCES user_details(userId) ON DELETE CASCADE,
+    	FOREIGN KEY (commentId) REFERENCES article_comments(commentId) ON DELETE CASCADE
+    );
+    
+    /* Category Table */
+    
+    CREATE TABLE categories (
+    	categoryId VARCHAR(40) PRIMARY KEY,
+    	categoryName TINYTEXT NOT NULL,
+    	description MEDIUMTEXT NOT NULL
+    );
+    
+    /* Tags Table */
+    
+    CREATE TABLE tags (
+    	tagId VARCHAR(40) PRIMARY KEY,
+    	tagName TINYTEXT NOT NULL
+    );
+    
+    /* Article - Categories Table */
+    
+    CREATE TABLE article_categories (
+    	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	categoryId VARCHAR(40) NOT NULL,
+    	articleId VARCHAR(40) NOT NULL,
+    	FOREIGN KEY (categoryId) REFERENCES categories(categoryId) ON DELETE CASCADE,
+    	FOREIGN KEY (articleId) REFERENCES articles(articleId) ON DELETE CASCADE
+    );
+    
+    /* Article - Tags Table */
+    
+    CREATE TABLE article_tags (
+    	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	tagId VARCHAR(40) NOT NULL,
+    	articleId VARCHAR(40) NOT NULL,
+    	FOREIGN KEY (tagId) REFERENCES tags(tagId) ON DELETE CASCADE,
+    	FOREIGN KEY (articleId) REFERENCES articles(articleId) ON DELETE CASCADE
+    );
+    
+    /* Follower Details Table */
+    
+    CREATE TABLE follower_details (
+    	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	followerId VARCHAR(40) NOT NULL,
+    	followingId VARCHAR(40) NOT NULL,
+    	FOREIGN KEY (followerId) REFERENCES user_details(userId) ON DELETE CASCADE,
+    	FOREIGN KEY (followingId) REFERENCES user_details(userId) ON DELETE CASCADE
+    );
     ```
+    
+- Reference
+    
+    [Guide To Design Database For Blog Management In MySQL](https://mysql.tutorials24x7.com/blog/guide-to-design-a-database-for-blog-management-in-mysql)
     
 
 # UI/UX Layout
@@ -149,9 +292,8 @@ Users with or without the knowledge of Markdown can use the platform to create a
 | Developer | Sitanshu Pokalwar | sitz2309@gmail.com |
 | Developer | Sahil Kumar | official.sks547@gmail.com |
 | Developer | Krishna Chaitanya Thota | kt0731@srmist.edu.in |
-| Developer |  |  |
-| Developer |  |  |
-| Developer |  |  |
+| Developer | Udit Gogia | gogiaudit17@gmail.com |
+| Developer | Sai Surya Varun Appala | appalavarun@gmail.com |
 
 # Links To Project
 
@@ -162,8 +304,6 @@ Users with or without the knowledge of Markdown can use the platform to create a
 [https://github.com/kunalkeshan/mkd-blog](https://github.com/kunalkeshan/mkd-blog)
 
 ## Site (Work in Progress)
-
-[https://www.notion.so](https://www.notion.so)
 
 ## Quick Links
 
