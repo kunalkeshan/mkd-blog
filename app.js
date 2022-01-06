@@ -11,7 +11,7 @@ const appRouter = require("./src/app");
 // Initializing Express Application
 const app = express();
 
-// Setting up Middleware 
+// Setting up Middleware's 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());

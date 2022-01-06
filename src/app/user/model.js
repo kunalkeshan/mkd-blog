@@ -1,8 +1,11 @@
 const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database")
+const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: {nanoidLength, saltRounds, jwtSecret} } = require("../../helper/config");
+
+// JSON fields stored as string in database.
+const STRING_IN_DB = ["links", "bio"];
 
 class User extends Model{ 
     
@@ -39,12 +42,17 @@ class User extends Model{
         for(let prop in this.toJSON()){
             args.forEach((arg) => {
                 this[prop] = arg === prop ? JSON.stringify(this[prop]) : this[prop];                
-            })
-        }
-    }
+            });
+        };
+    };
 
     // Static Methods
 
+    /* 
+    * @params {string} username
+    * @params {string} email
+    * @returns {Object} checkExists with properties username and email, return value of boolean on check
+    */
     static async checkUsernameAndEmailExists({username, email}){
         const checkExists = {
             username: false,
@@ -57,7 +65,7 @@ class User extends Model{
             if(emailExists.count) checkExists.email = true;
             return checkExists;
         } catch (error) {
-            console.log(error);
+            console.log(`Error checking Username and Email: ${error}`);
         }
     }
 }
@@ -110,13 +118,14 @@ User.init({
     updatedAt: "lastLogin",
     hooks: {
         afterCreate: (user, options) => {
-            user.convertToJSON("links", "bio");
+            user.convertToJSON(STRING_IN_DB);
+            user.generateDefaultAvatar();
         },
         afterSave: (user, options) => {
-            user.convertToJSON("links", "bio");
+            user.convertToJSON(STRING_IN_DB);
         },
         beforeSave: (user, options) => {
-            user.convertToString("links", "bio");
+            user.convertToString(STRING_IN_DB);
         },
     }
 });
