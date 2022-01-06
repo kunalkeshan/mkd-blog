@@ -1,4 +1,5 @@
 const User = require("./model");
+const { renderAppPage } = require("../../helper/middleware/appFunctions")
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS
@@ -31,7 +32,7 @@ exports.registerUser = async (req, res) => {
         const newUser = User.build(req.body);
         await newUser.save();
         const token = newUser.generateAuthToken();
-        res.status(200).cookie("authToken", token).json({message: "Account Registered Successfully!"});
+        res.status(201).cookie("authToken", token).json({message: "Account Registered Successfully!"});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -53,6 +54,61 @@ exports.loginUser = async (req, res) => {
     }
 }
 
+exports.getUser = async (req, res) => {
+
+}
+
+exports.toUserProfile = async (req, res) => {
+
+}
+
 /* ====================== 
     AUTHENTICATED CONTROLLERS
    ====================== */
+
+exports.updateBio = async (req, res) => {
+    const { userId } = req.user
+    try {
+        const user = await User.findByPk({userId});
+        if(!user) throw new Error("Error to find user");
+        await user.update({bio: req.body.bio});
+        res.status(200).json({message: "Bio Updated Successfully"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
+}
+
+exports.updateLinks = async (req, res) => {
+    const { userId } = req.user
+    try {
+        const user = await User.findByPk({userId});
+        if(!user) throw new Error("Error to find user");
+        await user.update({links: req.body.links});
+        res.status(200).json({message: "Links Updated Successfully"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
+}
+
+exports.updateUserDetails = async (req, res) => {
+
+}
+
+exports.updateUserPassword = async (req, res) => {
+
+}
+
+exports.toUserEdit = async (req, res) => {
+
+}
+
+exports.logoutUser = async (req, res) => {
+    if(!req.user) res.status(400).json({message: "Unable to Logout User"});
+    res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "User Logged Out successfully"});
+}
+
+
+
+

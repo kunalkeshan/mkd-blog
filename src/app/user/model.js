@@ -48,7 +48,7 @@ class User extends Model{
 
     authenticateUser({password}){
         const valid =  bcrypt.compareSync(password, this.hashedPassword);
-        if(!valid) throw new Error("Invalid");
+        if(!valid) throw new Error("Invalid Password");
         return true;
     }
 
@@ -111,6 +111,12 @@ User.init({
         afterSave: (user, options) => {
             user.convertToJSON(STRING_IN_DB);
         },
+        beforeUpdate: (user, options) => {
+            user.convertToString(STRING_IN_DB);
+        },
+        afterUpdate: (user, options) => {
+            user.convertToJSON(STRING_IN_DB);
+        }
     },
 });
 

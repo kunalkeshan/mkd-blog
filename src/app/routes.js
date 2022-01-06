@@ -7,12 +7,14 @@ const articleRouter = require("./article");
 const commentsRouter = require("./comments");
 const featuresRouter = require("./features");
 
+
 Router.get("/", indexController.toIndex);
 Router.get("/home", authenticate, indexController.toHome);
 
-Router.use("/user", userRouter);
-Router.use("/article", articleRouter);
-Router.use("/article/:id/comment", commentsRouter);
-Router.use("/feature", featuresRouter);
+Router.use(userRouter);
+Router.use(articleRouter);
+Router.use(commentsRouter);
+Router.use(featuresRouter);
+
 
 module.exports = Router;

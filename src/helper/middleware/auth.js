@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
     if(!token) return res.redirect("/");
     jwt.verify(token, jwtSecret, async (error, decoded) => {
         try {
-            const user = await User.findByPk({userId: decoded.userId}).toJSON();
+            const user = await User.findByPk({userId: decoded.userId});
             if(!user) throw new Error("Authorize session by logging in or signing up");
             delete user.hashedPassword;
             req.token = token;
