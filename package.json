@@ -6,9 +6,9 @@
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
-    "start": "node .",
+    "start": "echo \"Initializing Server\" node .",
     "sass": "node-sass -w src/helper/sass -o public/css",
-    "devStart": "nodemon ."
+    "devStart": "echo \"Starting Local Development Environment\" && nodemon ."
   },
   "dependencies": {
     "agenda": "^4.2.1",

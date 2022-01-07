@@ -27,9 +27,9 @@ module.exports = {
     },
     secrets: {
         jwtSecret: process.env.JWT_SECRET,
-        saltRounds: +process.env.SALT,
-        nanoidLength: +process.env.NANOID_LENGTH,
-        idLength: +process.env.ID_LENGTH,
+        saltRounds: parseInt(process.env.SALT),
+        nanoidLength: parseInt(process.env.NANOID_LENGTH),
+        idLength: parseInt(process.env.ID_LENGTH),
     },
     cloudinary: {
         cloudinaryUrl: process.env.CLOUDINARY_URL,
