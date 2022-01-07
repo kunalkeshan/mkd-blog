@@ -1,6 +1,6 @@
 const Router = require("express").Router();
 const userController = require("./controller");
-const { authenticate } = require("../../helper/middleware/auth");
+const authenticate = require("../../helper/middleware/auth");
 
 /* ====================== 
     UNAUTHENTICATED ROUTES
@@ -8,15 +8,17 @@ const { authenticate } = require("../../helper/middleware/auth");
 
 Router.get("/api/isEmailUnique", userController.isEmailUnique);
 
-Router.get("/api/isUsernameUnique", userController.isUsernameUnique);
+Router.get("/api/isUsernameUnique/:username", userController.isUsernameUnique);
 
 Router.post("/api/register", userController.registerUser);
 
 Router.post("/api/login", userController.loginUser);
 
-Router.get("/api/user/:id", userController.getUser);
+Router.get("/api/user/id", userController.getUserById);
 
-Router.get("/user/:id", userController.toUserProfile);
+Router.get("/api/user/username", userController.getUserByUsername);
+
+Router.get("/author/:username", userController.toUserProfile);
 
 /* ====================== 
     AUTHENTICATED ROUTES

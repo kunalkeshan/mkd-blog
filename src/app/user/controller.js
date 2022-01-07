@@ -5,28 +5,46 @@ const { renderAppPage } = require("../../helper/middleware/appFunctions")
     UNAUTHENTICATED CONTROLLERS
    ====================== */
 
+/* 
+* @desc Check if Username already exists
+* @route GET /api/isUsernameUnique/
+* @data username as a string in the body
+* @access Public
+*/
 exports.isUsernameUnique = async (req, res) => {
     try {
-        const username = await User.findAndCountAll({username: req.body.username});
-        if(!username.count) throw new Error("Username Taken");
-        res.status(200).json({message: "Username Available"}); 
+        const checkUsername = await User.findAndCountAll({username: req.body.username});
+        const isUsernameUnique = Boolean(checkUsername.count);
+        res.status(200).json({message: `Username is ${isUsernameUnique ? "": "not"} available`, isUsernameUnique});
     } catch (error) {
         console.log(error);
-        res.status().json({message: error.message});
+        res.status(400).json({message: error.message});
     }
 }
 
+/* 
+* @desc Check if Email already exists
+* @route GET /api/isEmailUnique/
+* @data email as a string in the body
+* @access Public
+*/
 exports.isEmailUnique = async (req, res) => {
     try {
-        const username = await User.findAndCountAll({email: req.body.username});
-        if(!username.count) throw new Error("Email Taken");
-        res.status(200).json({message: "Email Available"}); 
+        const email = await User.findAndCountAll({email: req.body.email});
+        const isEmailUnique = Boolean(email.count);
+        res.status(200).json({message: `Email is ${isEmailUnique ? "" : "not"} available`, isEmailUnique});
     } catch (error) {
         console.log(error);
         res.status().json({message: error.message});
     }
 }
 
+/* 
+* @desc Register a new User
+* @route POST /api/register/
+* @data the user details in the req body
+* @access Public
+*/
 exports.registerUser = async (req, res) => {
     try {
         const newUser = User.build(req.body);
@@ -39,11 +57,17 @@ exports.registerUser = async (req, res) => {
     }
 }
 
+/* 
+* @desc Login a user
+* @route POST /api/login/
+* @data the user details in the req body
+* @access Public
+*/
 exports.loginUser = async (req, res) => {
     try {
         const user = await User.findOne({username: req.body.username, email: req.body.email});
         if(!user) throw new Error("No Such User Exists");
-        const checkPassword = user.authenticateUser(req.body);
+        const checkPassword = await user.authenticateUser(req.body);
         if(checkPassword) {
             const token = user.generateAuthToken();
             res.status(200).cookie("authToken", token).json({message: "Login Successful!"})
@@ -54,12 +78,68 @@ exports.loginUser = async (req, res) => {
     }
 }
 
-exports.getUser = async (req, res) => {
-
+/* 
+* @desc Get user details with userId
+* @route GET /api/user/id
+* @data the userId in the req body
+* @access Public
+*/
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await User.findByPk({userId: req.body.userId});
+        if(!user) throw new Error("No Such User Found");
+        res.status(200).json({message: `User with userId:${userId} found.`, user});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
 }
 
-exports.toUserProfile = async (req, res) => {
+/* 
+* @desc Get user details with username
+* @route GET /api/user/username
+* @data the username in the req body
+* @access Public
+*/
+exports.getUserByUsername = async (req, res) => {
+    try {
+        const user = await User.findOne({username: req.body.username});
+        if(!user) throw new Error("No Such User Found");
+        res.status(200).json({message: `User with username:${username} found.`, user});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
+}
 
+/* 
+* @desc Render the user profile with username
+* @route GET /author/:username
+* @data the username in the req params
+* @access Public
+*/
+exports.toUserProfile = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({username});
+        if(!user) throw new Error("No Such User Found");
+        const isCurrentUser = username === user.username;   
+        renderAppPage({
+            res: res,
+            renderTo: "profile",
+            options: {
+                page: {
+                    title: `${username} | Mkd Blog`,
+                    link: "profile",
+                },
+                isCurrentUser,
+                user,
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
 }
 
 /* ====================== 
@@ -70,7 +150,7 @@ exports.updateBio = async (req, res) => {
     const { userId } = req.user
     try {
         const user = await User.findByPk({userId});
-        if(!user) throw new Error("Error to find user");
+        if(!user) throw new Error("Error finding user");
         await user.update({bio: req.body.bio});
         res.status(200).json({message: "Bio Updated Successfully"});
     } catch (error) {
@@ -83,7 +163,7 @@ exports.updateLinks = async (req, res) => {
     const { userId } = req.user
     try {
         const user = await User.findByPk({userId});
-        if(!user) throw new Error("Error to find user");
+        if(!user) throw new Error("Error finding user");
         await user.update({links: req.body.links});
         res.status(200).json({message: "Links Updated Successfully"});
     } catch (error) {
@@ -93,15 +173,47 @@ exports.updateLinks = async (req, res) => {
 }
 
 exports.updateUserDetails = async (req, res) => {
-
+    const { userId } = req.user;
 }
 
 exports.updateUserPassword = async (req, res) => {
-
+    const { userId } = req.user;
+    const { oldPassword, newPassword } = req.body;
+    try {
+        const user = User.findByPk({ userId });
+        if(!user) throw new Error("Error finding User");
+        const valid = await user.authenticateUser({password: oldPassword});
+        if(!valid) throw new Error("Wrong Password!");
+        await user.update({hashedPassword: newPassword});
+        res.status(201).json({message: "Password updated successfully!"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
 }
 
 exports.toUserEdit = async (req, res) => {
-
+    const { userId } = req.user;
+    try {
+        let user = User.findByPk({ userId });
+        if(!user) throw new Error("Error finding User");
+        delete user.hashedPassword;
+        user = user.toJSON();
+        renderAppPage({
+            res: res,
+            renderTo: "profile-edit",
+            options: {
+                page: {
+                    title: `${username} | Mkd Blog`,
+                    link: "profile-edit",
+                },
+                user,
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
 }
 
 exports.logoutUser = async (req, res) => {

@@ -46,10 +46,8 @@ class User extends Model{
         };
     };
 
-    authenticateUser({password}){
-        const valid =  bcrypt.compareSync(password, this.hashedPassword);
-        if(!valid) throw new Error("Invalid Password");
-        return true;
+    async authenticateUser({password = ""}){
+        return await bcrypt.compare(password, this.hashedPassword);
     }
 
     // Static Methods
@@ -70,12 +68,19 @@ User.init({
     username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+            msg: "Username already exists!"
+        },
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+            msg: "Email already exists!"
+        },
+        validate: {
+            isEmail: true
+        }
     },
     links: {
         type: DataTypes.TEXT("medium"),
@@ -103,7 +108,7 @@ User.init({
     createdAt: "registeredAt",
     updatedAt: "lastLogin",
     hooks: {
-        beforeSave: (user, options) => {
+        beforeSave: async (user, options) => {
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);

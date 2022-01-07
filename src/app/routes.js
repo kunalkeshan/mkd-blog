@@ -8,13 +8,23 @@ const commentsRouter = require("./comments");
 const featuresRouter = require("./features");
 
 
-Router.get("/", indexController.toIndex);
-Router.get("/home", authenticate, indexController.toHome);
-
 Router.use(userRouter);
 Router.use(articleRouter);
 Router.use(commentsRouter);
 Router.use(featuresRouter);
+
+/* ====================== 
+    UNAUTHENTICATED ROUTES
+   ====================== */
+
+Router.get("/", indexController.toIndex);
+
+/* ====================== 
+    AUTHENTICATED ROUTES
+   ====================== */
+
+Router.get("/home", authenticate, indexController.toHome);
+
 
 
 module.exports = Router;
