@@ -2,7 +2,6 @@ const User = require("./model");
 const validator = require("validator");
 const moment = require("moment");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
-const { Sequelize: { DataTypes } } = require("../../helper/database");
 
 
 /* ====================== 
@@ -146,7 +145,7 @@ exports.getUserById = async (req, res) => {
         if(!req.body.userId) throw new Error("Request Body should contain {userId: 'String'}");
         const user = await User.findByPk({userId: req.body.userId});
         if(!user) throw new Error("No Such User Found");
-        res.status(200).json({message: `User with userId:${userId} found.`, user});
+        res.status(200).json({message: `User with userId:${req.body.userId} found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -164,7 +163,7 @@ exports.getUserByUsername = async (req, res) => {
         if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
         const user = await User.findOne({username: req.body.username});
         if(!user) throw new Error("No Such User Found");
-        res.status(200).json({message: `User with username:${username} found.`, user});
+        res.status(200).json({message: `User with username:${req.body.username} found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -183,12 +182,12 @@ exports.toUserProfile = async (req, res) => {
     const currentUser = req.user ? req.user : false;
     try {
         const user = await User.findOne({where: {
-            username: username,
+            username
         }});
         if(!user) throw new Error("No Such User Found");
         const isCurrentUser = currentUser && currentUser.username === username ;   
         renderAppPage({
-            res: res,
+            res,
             renderTo: "profile",
             options: {
                 page: {
@@ -267,7 +266,7 @@ exports.toUserEdit = async (req, res) => {
             renderTo: "profile-edit",
             options: {
                 page: {
-                    title: `${username} | Mkd Blog`,
+                    title: `${user.username} | Mkd Blog`,
                     link: "profile-edit",
                 },
                 user,
@@ -279,9 +278,9 @@ exports.toUserEdit = async (req, res) => {
     }
 }
 
-exports.logoutUser = async (req, res) => {
-    if(!req.user) res.status(400).json({message: "Unable to Logout User"});
-    res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "User Logged Out successfully"});
+exports.logoutUser = (req, res) => {
+    if(!req.user) res.status(400).json({message: "Unable to Logout."});
+    res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "Logged Out successfully"});
 }
 
 

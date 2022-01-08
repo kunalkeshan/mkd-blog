@@ -28,7 +28,7 @@ class User extends Model{
     * @param {Array} of all Keys of the User object
     */
     convertToJSON(...args){
-        for(let prop in this.toJSON()){
+        for(const prop in this.toJSON()){
             args.forEach((arg) => {
                 this[prop] = arg === prop ? JSON.parse(this[prop]) : this[prop];                
             });
@@ -39,7 +39,7 @@ class User extends Model{
     * @param {Array} of all Keys of the User object
     */
     convertToString(...args){
-        for(let prop in this.toJSON()){
+        for(const prop in this.toJSON()){
             args.forEach((arg) => {
                 this[prop] = arg === prop ? JSON.stringify(this[prop]) : this[prop];                
             });
@@ -49,7 +49,8 @@ class User extends Model{
      * @param  {String} password to compare
      */
     async authenticateUser({password}){
-        return await bcrypt.compare(password, this.hashedPassword);
+        const valid = await bcrypt.compare(password, this.hashedPassword); 
+        return valid;
     }
 
     // Static Methods
@@ -119,14 +120,14 @@ User.init({
     updatedAt: "lastLogin",
     timestamps: false,
     hooks: {
-        beforeSave: async (user, options) => {
+        beforeSave: (user) => {
             const isNewUser = user.lastLogin.toString() === user.registeredAt.toString()
             if(!isNewUser) return;
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);
         },
-        afterSave: (user, options) => {
+        afterSave: (user) => {
             user.convertToJSON(STRING_IN_DB);
         },
     },
