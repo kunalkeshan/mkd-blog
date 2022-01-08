@@ -8,7 +8,7 @@ const Article = require("./article/model");
 exports.toIndex = (req, res) => {
     const token = req.cookies.authToken;
     if(token) return res.redirect("/home");
-    renderAppPage({res: res, renderTo: "index", options: {
+    renderAppPage({res, renderTo: "index", options: {
         page: {
             title: "Markdown Blog",
             link: "index"
@@ -24,7 +24,7 @@ exports.toHome = (req, res) => {
 
     // TODO: API Call to get latest posts and send them to views to render
 
-    renderAppPage({res: res, renderTo: "home", options: {
+    renderAppPage({res, renderTo: "home", options: {
         page: {
             title: "Home | Mkd Blog",
             link: "home"

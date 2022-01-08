@@ -11,6 +11,8 @@ const appRouter = require("./src/app");
 // Initializing Express Application
 const app = express();
 
+app.disable("x-powered-by")
+
 // Setting up Middleware's 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
@@ -42,7 +44,7 @@ app.use((error, req, res, next) => {
     });
 });
 
-app.listen(port, function(err){
+app.listen(port, (err) => {
     if(err) console.log(`Error in running server! Error: ${err}`);
     else console.log(`Server running at http://localhost:${port}`);
 });

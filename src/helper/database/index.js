@@ -10,7 +10,7 @@ const { host, user, password, database: dbName} = isDevelopment ? db.development
 
 // Creating Sequelize Connection
 const sequelize = new Sequelize(dbName, user, password, {
-    host: host,
+    host,
     dialect: db.dialect,
     // operatorsAliases: false,
     pool: {...db.pool},
