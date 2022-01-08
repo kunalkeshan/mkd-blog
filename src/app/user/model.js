@@ -48,7 +48,7 @@ class User extends Model{
     /**
      * @param  {String} password to compare
      */
-    async authenticateUser({password = ""}){
+    async authenticateUser({password}){
         return await bcrypt.compare(password, this.hashedPassword);
     }
 
@@ -60,7 +60,7 @@ User.init({
     userId: {
         type: DataTypes.STRING(40),
         primaryKey: true,
-        defaultValue: nanoid(nanoidLength),
+        defaultValue: () => nanoid(nanoidLength),
         allowNull: false,
     },
     fullName: {
@@ -104,13 +104,24 @@ User.init({
         allowNull: false,
         defaultValue: "",
     },
+    registeredAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    lastLogin: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    }
 }, {
     sequelize,
     modelName: "test_user_details",
     createdAt: "registeredAt",
     updatedAt: "lastLogin",
+    timestamps: false,
     hooks: {
         beforeSave: async (user, options) => {
+            const isNewUser = user.lastLogin.toString() === user.registeredAt.toString()
+            if(!isNewUser) return;
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);
@@ -118,12 +129,6 @@ User.init({
         afterSave: (user, options) => {
             user.convertToJSON(STRING_IN_DB);
         },
-        beforeUpdate: (user, options) => {
-            user.convertToString(STRING_IN_DB);
-        },
-        afterUpdate: (user, options) => {
-            user.convertToJSON(STRING_IN_DB);
-        }
     },
 });
 

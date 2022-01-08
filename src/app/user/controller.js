@@ -1,6 +1,8 @@
 const User = require("./model");
-const { renderAppPage } = require("../../helper/middleware/appFunctions");
 const validator = require("validator");
+const moment = require("moment");
+const { renderAppPage } = require("../../helper/middleware/appFunctions");
+const { Sequelize: { DataTypes } } = require("../../helper/database");
 
 
 /* ====================== 
@@ -15,13 +17,17 @@ const validator = require("validator");
 */
 exports.isUsernameUnique = async (req, res) => {
     try {
+        // Pre checks
         if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
+
+        // Find Username
         const checkUsername = await User.findAndCountAll({
             where: {
                 username: req.body.username,
             }
         });
         const isUsernameUnique = !checkUsername.count;
+
         res.status(200).json({message: `Username is${isUsernameUnique ? "": " not"} available`, isUsernameUnique});
     } catch (error) {
         console.log(error);
@@ -37,14 +43,18 @@ exports.isUsernameUnique = async (req, res) => {
 */
 exports.isEmailUnique = async (req, res) => {
     try {
+        // Pre checks
         if(!req.body.email) throw new Error("Request Body should contain {email: 'String'}");
-        if(!validator.isEmail(req.body.email)) throw new Error("Should be a valid Email");
+        if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a valid Email'}");
+
+        // Find email
         const email = await User.findAndCountAll({
             where: {
                 email: req.body.email,
             }
         });
         const isEmailUnique = !email.count;
+
         res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
     } catch (error) {
         console.log(error.message);
@@ -60,13 +70,28 @@ exports.isEmailUnique = async (req, res) => {
 */
 exports.registerUser = async (req, res) => {
     try {
-        const newUser = User.build(req.body);
+        // Pre checks
+        if(!req.body.fullName || !req.body.email || !req.body.username || !req.body.password) throw new Error(`Request Body should contain {${req.body.fullName ? "" : " fullName,"}${req.body.username ? "" : " username,"}${req.body.email ? "" : " email,"}${req.body.password ? "" : " password"}}: 'String'`)
+        if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a vaild Email'}");
+
+        // Saving new User
+        const newUser = User.build({hashedPassword: req.body.password,...req.body});
         await newUser.save();
+
+        // Generating Auth token
         const token = newUser.generateAuthToken();
-        res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!" });
+
+        // Update user before sending
+        const user = newUser.toJSON();
+        delete user.hashedPassword;
+        user.registeredAt = moment(user.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
+        user.lastLogin = moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
+
+        // Sending response
+        res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!", user });
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
     }
 }
 
@@ -77,17 +102,36 @@ exports.registerUser = async (req, res) => {
 * @access Public
 */
 exports.loginUser = async (req, res) => {
+    const isUsernameLogin = req.body.type === "username";
     try {
-        const user = await User.findOne({username: req.body.username, email: req.body.email});
+        // Pre Check
+        if(!req.body.email && !isUsernameLogin) throw new Error("Request Body should contain {email: 'String'}");
+        if(!req.body.username && isUsernameLogin) throw new Error("Request Body should contain {username: 'String'}");
+
+        // Get User 
+        const query = isUsernameLogin ? {username: req.body.username} : {email: req.body.email}
+        const user = await User.findOne({where: query});
         if(!user) throw new Error("No Such User Exists");
+
+        // Authenticate user w password
         const checkPassword = await user.authenticateUser(req.body);
         if(!checkPassword) throw new Error("Invalid Password!");
-        const token = user.generateAuthToken();
-        res.status(200).cookie("authToken", token).json({message: "Login Successful!"});
 
+        // Generate Auth Token
+        const token = user.generateAuthToken();
+
+        // Update User before sending
+        await user.update({lastLogin: Date.now()})
+        const loggedinUser = user.toJSON();
+        delete loggedinUser.hashedPassword;
+        loggedinUser.registeredAt = moment(loggedinUser.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
+        loggedinUser.lastLogin = moment(loggedinUser.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
+
+        // Sending response
+        res.status(200).cookie("authToken", token).json({message: "Login Successful!", user: loggedinUser});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message})
+        res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
     }
 }
 
@@ -99,6 +143,7 @@ exports.loginUser = async (req, res) => {
 */
 exports.getUserById = async (req, res) => {
     try {
+        if(!req.body.userId) throw new Error("Request Body should contain {userId: 'String'}");
         const user = await User.findByPk({userId: req.body.userId});
         if(!user) throw new Error("No Such User Found");
         res.status(200).json({message: `User with userId:${userId} found.`, user});
@@ -116,6 +161,7 @@ exports.getUserById = async (req, res) => {
 */
 exports.getUserByUsername = async (req, res) => {
     try {
+        if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
         const user = await User.findOne({username: req.body.username});
         if(!user) throw new Error("No Such User Found");
         res.status(200).json({message: `User with username:${username} found.`, user});
@@ -133,10 +179,14 @@ exports.getUserByUsername = async (req, res) => {
 */
 exports.toUserProfile = async (req, res) => {
     const { username } = req.params;
+    // TODO: check for auth token instead;
+    const currentUser = req.user ? req.user : false;
     try {
-        const user = await User.findOne({username});
+        const user = await User.findOne({where: {
+            username: username,
+        }});
         if(!user) throw new Error("No Such User Found");
-        const isCurrentUser = username === user.username;   
+        const isCurrentUser = currentUser && currentUser.username === username ;   
         renderAppPage({
             res: res,
             renderTo: "profile",
@@ -145,7 +195,7 @@ exports.toUserProfile = async (req, res) => {
                     title: `${username} | Mkd Blog`,
                     link: "profile",
                 },
-                isCurrentUser,
+                isCurrentUser, 
                 user,
             },
         });
