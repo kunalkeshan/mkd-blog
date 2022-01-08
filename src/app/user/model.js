@@ -24,8 +24,8 @@ class User extends Model{
         return jwt.sign(this.toJSON(), jwtSecret, {expiresIn: "1d"});
     };
 
-    /* 
-    * @params {Array} Array of all Keys of the User object
+    /** 
+    * @param {Array} of all Keys of the User object
     */
     convertToJSON(...args){
         for(let prop in this.toJSON()){
@@ -35,8 +35,8 @@ class User extends Model{
         };
     };
 
-    /* 
-    * @params {Array} Array of all Keys of the User object
+    /** 
+    * @param {Array} of all Keys of the User object
     */
     convertToString(...args){
         for(let prop in this.toJSON()){
@@ -45,7 +45,9 @@ class User extends Model{
             });
         };
     };
-
+    /**
+     * @param  {String} password to compare
+     */
     async authenticateUser({password = ""}){
         return await bcrypt.compare(password, this.hashedPassword);
     }

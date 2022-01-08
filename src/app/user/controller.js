@@ -1,5 +1,7 @@
 const User = require("./model");
-const { renderAppPage } = require("../../helper/middleware/appFunctions")
+const { renderAppPage } = require("../../helper/middleware/appFunctions");
+const validator = require("validator");
+
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS
@@ -13,9 +15,14 @@ const { renderAppPage } = require("../../helper/middleware/appFunctions")
 */
 exports.isUsernameUnique = async (req, res) => {
     try {
-        const checkUsername = await User.findAndCountAll({username: req.body.username});
-        const isUsernameUnique = Boolean(checkUsername.count);
-        res.status(200).json({message: `Username is ${isUsernameUnique ? "": "not"} available`, isUsernameUnique});
+        if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
+        const checkUsername = await User.findAndCountAll({
+            where: {
+                username: req.body.username,
+            }
+        });
+        const isUsernameUnique = !checkUsername.count;
+        res.status(200).json({message: `Username is${isUsernameUnique ? "": " not"} available`, isUsernameUnique});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -30,12 +37,18 @@ exports.isUsernameUnique = async (req, res) => {
 */
 exports.isEmailUnique = async (req, res) => {
     try {
-        const email = await User.findAndCountAll({email: req.body.email});
-        const isEmailUnique = Boolean(email.count);
-        res.status(200).json({message: `Email is ${isEmailUnique ? "" : "not"} available`, isEmailUnique});
+        if(!req.body.email) throw new Error("Request Body should contain {email: 'String'}");
+        if(!validator.isEmail(req.body.email)) throw new Error("Should be a valid Email");
+        const email = await User.findAndCountAll({
+            where: {
+                email: req.body.email,
+            }
+        });
+        const isEmailUnique = !email.count;
+        res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
     } catch (error) {
-        console.log(error);
-        res.status().json({message: error.message});
+        console.log(error.message);
+        res.status(400).json({message: error.message});
     }
 }
 
@@ -50,7 +63,7 @@ exports.registerUser = async (req, res) => {
         const newUser = User.build(req.body);
         await newUser.save();
         const token = newUser.generateAuthToken();
-        res.status(201).cookie("authToken", token).json({message: "Account Registered Successfully!"});
+        res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!" });
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -68,10 +81,10 @@ exports.loginUser = async (req, res) => {
         const user = await User.findOne({username: req.body.username, email: req.body.email});
         if(!user) throw new Error("No Such User Exists");
         const checkPassword = await user.authenticateUser(req.body);
-        if(checkPassword) {
-            const token = user.generateAuthToken();
-            res.status(200).cookie("authToken", token).json({message: "Login Successful!"})
-        }
+        if(!checkPassword) throw new Error("Invalid Password!");
+        const token = user.generateAuthToken();
+        res.status(200).cookie("authToken", token).json({message: "Login Successful!"});
+
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message})

@@ -8,7 +8,7 @@ const authenticate = require("../../helper/middleware/auth");
 
 Router.get("/api/isEmailUnique", userController.isEmailUnique);
 
-Router.get("/api/isUsernameUnique/:username", userController.isUsernameUnique);
+Router.get("/api/isUsernameUnique", userController.isUsernameUnique);
 
 Router.post("/api/register", userController.registerUser);
 
