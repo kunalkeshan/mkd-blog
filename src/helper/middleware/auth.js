@@ -7,10 +7,8 @@ const authenticate = (req, res, next) => {
     if(!token) return res.redirect("/");
     jwt.verify(token, jwtSecret, async (err, decoded) => {
         try {
-            if(err) throw new Error(err.message);
-            const user = await User.findByPk({userId: decoded.userId});
+            const user = await User.findByPk(decoded.userId);
             if(!user) throw new Error("Unable to find user.");
-            delete user.hashedPassword;
             req.token = token;
             req.user = user;
             next();

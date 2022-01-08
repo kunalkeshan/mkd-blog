@@ -24,17 +24,17 @@ Router.get("/author/:username", userController.toUserProfile);
     AUTHENTICATED ROUTES
    ====================== */
 
-Router.post("/api/updateBio", authenticate, userController.updateBio);
+Router.patch("/api/updateBio", authenticate, userController.updateBio);
 
-Router.post("/api/updateLinks", authenticate, userController.updateLinks);
+Router.patch("/api/updateLinks", authenticate, userController.updateLinks);
 
-Router.post("/api/updateUserDetails", authenticate, userController.updateUserDetails);
+Router.patch("/api/updateUserDetails", authenticate, userController.updateUserDetails);
 
-Router.post("/api/updateUserPassword", authenticate, userController.updateUserPassword);
+Router.patch("/api/updatePassword", authenticate, userController.updateUserPassword);
 
 Router.post("/api/logout", authenticate, userController.logoutUser);
 
-Router.post("/user/:id/edit", authenticate, userController.toUserEdit);
+Router.get("/author/:username/edit", authenticate, userController.toUserEdit);
 
 module.exports = Router;
 

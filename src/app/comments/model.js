@@ -8,11 +8,12 @@ class Comment extends Model {
 
 }
 
+// Comments Model inherited from Sequelize Modal
 Comment.init({
     commentId: {
         type: DataTypes.STRING(40),
         primaryKey: true,
-        defaultValue: nanoid(idLength),
+        defaultValue: () => nanoid(idLength),
     },
     articleId: {
         type: DataTypes.STRING(40),

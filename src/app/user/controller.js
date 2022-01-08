@@ -1,6 +1,5 @@
 const User = require("./model");
 const validator = require("validator");
-const moment = require("moment");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
 
 
@@ -56,7 +55,7 @@ exports.isEmailUnique = async (req, res) => {
 
         res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
         res.status(400).json({message: error.message});
     }
 }
@@ -71,7 +70,7 @@ exports.registerUser = async (req, res) => {
     try {
         // Pre checks
         if(!req.body.fullName || !req.body.email || !req.body.username || !req.body.password) throw new Error(`Request Body should contain {${req.body.fullName ? "" : " fullName,"}${req.body.username ? "" : " username,"}${req.body.email ? "" : " email,"}${req.body.password ? "" : " password"}}: 'String'`)
-        if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a vaild Email'}");
+        if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a valid Email'}");
 
         // Saving new User
         const newUser = User.build({hashedPassword: req.body.password,...req.body});
@@ -81,10 +80,7 @@ exports.registerUser = async (req, res) => {
         const token = newUser.generateAuthToken();
 
         // Update user before sending
-        const user = newUser.toJSON();
-        delete user.hashedPassword;
-        user.registeredAt = moment(user.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
-        user.lastLogin = moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
+        const user = newUser.generateSanitizedUser();
 
         // Sending response
         res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!", user });
@@ -121,13 +117,10 @@ exports.loginUser = async (req, res) => {
 
         // Update User before sending
         await user.update({lastLogin: Date.now()})
-        const loggedinUser = user.toJSON();
-        delete loggedinUser.hashedPassword;
-        loggedinUser.registeredAt = moment(loggedinUser.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
-        loggedinUser.lastLogin = moment(loggedinUser.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
+        const loggedInUser = user.generateSanitizedUser();
 
         // Sending response
-        res.status(200).cookie("authToken", token).json({message: "Login Successful!", user: loggedinUser});
+        res.status(200).cookie("authToken", token).json({message: "Login Successful!", user: loggedInUser});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
@@ -138,14 +131,19 @@ exports.loginUser = async (req, res) => {
 * @desc Get user details with userId
 * @route GET /api/user/id
 * @data the userId in the req body
-* @access Public
+* @access Public 
 */
 exports.getUserById = async (req, res) => {
     try {
         if(!req.body.userId) throw new Error("Request Body should contain {userId: 'String'}");
-        const user = await User.findByPk({userId: req.body.userId});
-        if(!user) throw new Error("No Such User Found");
-        res.status(200).json({message: `User with userId:${req.body.userId} found.`, user});
+
+        const userById = await User.findByPk(req.body.userId);
+        if(!userById) throw new Error("No Such User Found");
+
+        // Update user before sending
+        const user = userById.generateSanitizedUser();
+        
+        res.status(200).json({message: `User with userId: '${req.body.userId}' found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -161,9 +159,16 @@ exports.getUserById = async (req, res) => {
 exports.getUserByUsername = async (req, res) => {
     try {
         if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
-        const user = await User.findOne({username: req.body.username});
-        if(!user) throw new Error("No Such User Found");
-        res.status(200).json({message: `User with username:${req.body.username} found.`, user});
+
+        const userByUsername = await User.findOne({where: {
+            username: req.body.username,
+        }});
+        if(!userByUsername) throw new Error("No Such User Found");
+
+        // Update user before sending
+        const user = userByUsername.generateSanitizedUser();
+
+        res.status(200).json({message: `User with username: '${req.body.username}' found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -178,18 +183,16 @@ exports.getUserByUsername = async (req, res) => {
 */
 exports.toUserProfile = async (req, res) => {
     const { username } = req.params;
-    // TODO: check for auth token instead;
-    const currentUser = req.user ? req.user : false;
+    const token = req.cookies.authToken;
     try {
+        let isCurrentUser = token ? await User.getUserFromAuthToken(token) : false;
         const user = await User.findOne({where: {
             username
         }});
         if(!user) throw new Error("No Such User Found");
-        const isCurrentUser = currentUser && currentUser.username === username ;   
-        renderAppPage({
-            res,
-            renderTo: "profile",
-            options: {
+
+        isCurrentUser = isCurrentUser.userId === user.userId;  
+        renderAppPage({res, renderTo: "profile", options: {
                 page: {
                     title: `${username} | Mkd Blog`,
                     link: "profile",
@@ -208,45 +211,107 @@ exports.toUserProfile = async (req, res) => {
     AUTHENTICATED CONTROLLERS
    ====================== */
 
+/* 
+* @desc Update User Bio
+* @route PATCH /api/updateBio
+* @data bio in request body
+* @access Private
+*/
 exports.updateBio = async (req, res) => {
-    const { userId } = req.user
+    const { userId } = req.user;
     try {
-        const user = await User.findByPk({userId});
+        if(!req.body.bio) throw new Error("Request body must contain {bio: 'Object'}");
+        const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        await user.update({bio: req.body.bio});
-        res.status(200).json({message: "Bio Updated Successfully"});
+        console.log(await user.update({bio: JSON.stringify(req.body.bio)}));
+        res.status(201).json({message: "Bio Updated Successfully"});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
     }
 }
 
+/* 
+* @desc Update User Links
+* @route PATCH /api/updateLinks
+* @data links in request body
+* @access Private
+*/
 exports.updateLinks = async (req, res) => {
-    const { userId } = req.user
+    const { userId } = req.user;
     try {
-        const user = await User.findByPk({userId});
+        if(!req.body.links) throw new Error("Request Body should contain {links: 'Object'}");
+        const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        await user.update({links: req.body.links});
-        res.status(200).json({message: "Links Updated Successfully"});
+        await user.update({links: JSON.stringify(req.body.links)});
+        res.status(201).json({message: "Links Updated Successfully"});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
     }
 }
 
+/* 
+* @desc Update User details
+* @route PATCH /api/updateUserDetails
+* @data fullName, username, email in request body
+* @access Private
+*/
 exports.updateUserDetails = async (req, res) => {
     const { userId } = req.user;
+    const {fullName, username, email} = req.body
+    try {
+        // pre checks
+        if(!fullName || !username || !email) throw new Error(`Request body should contain { ${fullName ? "" : "fullName,"}${username ? "" : " username,"}${email ? "" : " email"} }`);
+        if(!validator.isEmail(email)) throw new Error("Email Invalid, should be {email: 'String'}");
+
+        // Check username existence
+        let belongsToUser;
+        const usernameCheck = await User.findAndCountAll({
+            where: {
+                username,
+            }
+        });
+        belongsToUser = usernameCheck?.rows[0]?.username === username
+        if(usernameCheck?.count && !belongsToUser) throw new Error(`Username: ${username} is already used!`);
+        
+        // Check email existence
+        const emailCheck = await User.findAndCountAll({
+            where: {
+                email
+            }
+        });
+        belongsToUser = emailCheck?.rows[0]?.email === email;
+        if(emailCheck.count && !belongsToUser) throw new Error(`Email: ${email} is already used!`)
+        
+        // update user
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("Error finding user");
+        await user.update(req.body)
+        res.status(201).json({message: "User details updated successfully"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
 }
 
+/* 
+* @desc Update User Password
+* @route PATCH /api/updatePassword
+* @data old and new password in request body
+* @access Private
+*/
 exports.updateUserPassword = async (req, res) => {
     const { userId } = req.user;
     const { oldPassword, newPassword } = req.body;
     try {
-        const user = User.findByPk({ userId });
+        if(!oldPassword || !newPassword) throw new Error(`Request Body should contain {${oldPassword ? "" : " oldPassword,"}${newPassword ? "" : " newPassword"} }`);
+        const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
-        const valid = await user.authenticateUser({password: oldPassword});
+        const valid = await user.authenticateUser(oldPassword);
         if(!valid) throw new Error("Wrong Password!");
-        await user.update({hashedPassword: newPassword});
+        if(oldPassword === newPassword) throw new Error("Old password cannot be the same as new password!");
+        await user.updatePasswordAndReturnUser(newPassword);
         res.status(201).json({message: "Password updated successfully!"});
     } catch (error) {
         console.log(error);
@@ -254,13 +319,18 @@ exports.updateUserPassword = async (req, res) => {
     }
 }
 
+/* 
+* @desc Render User Edit Page
+* @route GET /author/:username/edit
+* @access Private
+! To be tested
+*/
 exports.toUserEdit = async (req, res) => {
     const { userId } = req.user;
     try {
-        let user = User.findByPk({ userId });
+        let user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
-        delete user.hashedPassword;
-        user = user.toJSON();
+        user = user.generateSanitizedUser();
         renderAppPage({
             res: res,
             renderTo: "profile-edit",
@@ -278,11 +348,12 @@ exports.toUserEdit = async (req, res) => {
     }
 }
 
+/* 
+* @desc Logout User and Clear Cookie
+* @route POST /api/logout
+* @access Private
+*/
 exports.logoutUser = (req, res) => {
     if(!req.user) res.status(400).json({message: "Unable to Logout."});
     res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "Logged Out successfully"});
 }
-
-
-
-

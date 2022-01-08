@@ -3,6 +3,7 @@ const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/dat
 const {  secrets: { idLength } } = require("../../helper/config");
 const User = require("../user/model");
 
+// Article Model inherited from Sequelize Model
 class Article extends Model {
 
     //Instance Functions
@@ -12,7 +13,7 @@ class Article extends Model {
 Article.init({
     articleId: {
         type: DataTypes.STRING(40),
-        defaultValue: nanoid(idLength),
+        defaultValue: () => nanoid(idLength),
         primaryKey: true,
     },
     userId: {
