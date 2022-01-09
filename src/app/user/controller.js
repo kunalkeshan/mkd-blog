@@ -1,6 +1,7 @@
 const User = require("./model");
 const validator = require("validator");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
+const { sendWelcomeEmail } = require("../../helper/mailer")
 
 
 /* ====================== 
@@ -67,10 +68,12 @@ exports.isEmailUnique = async (req, res) => {
 * @access Public
 */
 exports.registerUser = async (req, res) => {
+    const {email, password} = req.body;
     try {
         // Pre checks
         if(!req.body.fullName || !req.body.email || !req.body.username || !req.body.password) throw new Error(`Request Body should contain {${req.body.fullName ? "" : " fullName,"}${req.body.username ? "" : " username,"}${req.body.email ? "" : " email,"}${req.body.password ? "" : " password"}}: 'String'`)
-        if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a valid Email'}");
+        if(!validator.isEmail(email)) throw new Error("{email: 'Should be a valid Email'}");
+        if(!validator.isStrongPassword(password)) throw Error("Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
 
         // Saving new User
         const newUser = User.build({hashedPassword: req.body.password,...req.body});
@@ -83,6 +86,10 @@ exports.registerUser = async (req, res) => {
         const user = newUser.generateSanitizedUser();
 
         // Sending response
+        sendWelcomeEmail({
+            emailTo: user.email,
+            fullName: user.fullName,
+        });
         res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!", user });
     } catch (error) {
         console.log(error);
@@ -109,7 +116,7 @@ exports.loginUser = async (req, res) => {
         if(!user) throw new Error("No Such User Exists");
 
         // Authenticate user w password
-        const checkPassword = await user.authenticateUser(req.body);
+        const checkPassword = await user.authenticateUser(req.body.password);
         if(!checkPassword) throw new Error("Invalid Password!");
 
         // Generate Auth Token
@@ -239,11 +246,18 @@ exports.updateBio = async (req, res) => {
 */
 exports.updateLinks = async (req, res) => {
     const { userId } = req.user;
+    const { links } = req.body;
     try {
-        if(!req.body.links) throw new Error("Request Body should contain {links: 'Object'}");
+        if(!links) throw new Error("Request Body should contain {links: 'Object'}");
+        for(const link in links){
+            const url = links[link];
+            if(!validator.isURL(url)) throw new Error(`${link} link is not valid!`);
+        }
+
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        await user.update({links: JSON.stringify(req.body.links)});
+        await user.update({links: JSON.stringify(links)});
+
         res.status(201).json({message: "Links Updated Successfully"});
     } catch (error) {
         console.log(error);
@@ -306,11 +320,14 @@ exports.updateUserPassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     try {
         if(!oldPassword || !newPassword) throw new Error(`Request Body should contain {${oldPassword ? "" : " oldPassword,"}${newPassword ? "" : " newPassword"} }`);
+
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
+
         const valid = await user.authenticateUser(oldPassword);
         if(!valid) throw new Error("Wrong Password!");
         if(oldPassword === newPassword) throw new Error("Old password cannot be the same as new password!");
+        if(!validator.isStrongPassword(newPassword)) throw Error("New Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
         await user.updatePasswordAndReturnUser(newPassword);
         res.status(201).json({message: "Password updated successfully!"});
     } catch (error) {

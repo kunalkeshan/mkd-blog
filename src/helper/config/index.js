@@ -3,7 +3,7 @@ require("dotenv").config();
 module.exports = {
     port: process.env.PORT,
     nodeEnvironment: process.env.NODE_ENV,
-    backendUrl: process.env.BACKEND_URL,
+    baseUrl: process.env.BASE_URL,
     database: {
         development: {
             host: process.env.DB_DEV_HOST, 
@@ -38,5 +38,9 @@ module.exports = {
     },
     rebrandly: {
         rebrandlyApiKey: process.env.REBRANDLY_API_KEY,
+    },
+    nodemailer: {
+        email: process.env.NODEMAILER_EMAIL,
+        password: process.env.NODEMAILER_PASSWORD,
     }
 }

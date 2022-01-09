@@ -12,7 +12,7 @@ const { host, user, password, database: dbName} = isDevelopment ? db.development
 const sequelize = new Sequelize(dbName, user, password, {
     host,
     dialect: db.dialect,
-    // operatorsAliases: false,
+    operatorsAliases: false,
     pool: {...db.pool},
     logging: false,
 });
