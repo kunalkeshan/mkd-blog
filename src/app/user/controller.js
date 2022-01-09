@@ -366,7 +366,7 @@ exports.toUserEdit = async (req, res) => {
 }
 
 /* 
-* @desc Delete User
+* @desc Delete a User
 * @route DELETE /api/deleteUser
 * @access Private
 */
@@ -380,7 +380,7 @@ exports.deleteUserAccount = async (req, res) => {
         const checkPassword = await user.authenticateUser(password);
         if(!checkPassword) throw new Error("Invalid Password!");
         await user.destroy();
-        res.cookie("authToken", "", {maxAge: 10})
+        res.cookie("authToken", "", {maxAge: 10});
         res.status(204).json({message: "User account deleted Successfully"});
     } catch (error) {
         console.log(error);
