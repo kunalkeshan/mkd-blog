@@ -104,19 +104,20 @@ exports.registerUser = async (req, res) => {
 * @access Public
 */
 exports.loginUser = async (req, res) => {
-    const isUsernameLogin = req.body.type === "username";
+    const {email = "", username = "", password} = req.body;
+    const isEmailLogin = validator.isEmail(email);
     try {
         // Pre Check
-        if(!req.body.email && !isUsernameLogin) throw new Error("Request Body should contain {email: 'String'}");
-        if(!req.body.username && isUsernameLogin) throw new Error("Request Body should contain {username: 'String'}");
+        if(!email && isEmailLogin) throw new Error("Request Body should contain {email: 'String'}");
+        if(!username && !isEmailLogin) throw new Error("Request Body should contain {username: 'String'}");
 
         // Get User 
-        const query = isUsernameLogin ? {username: req.body.username} : {email: req.body.email}
+        const query = isEmailLogin ? {email: email} :  {username: username};
         const user = await User.findOne({where: query});
         if(!user) throw new Error("No Such User Exists");
 
         // Authenticate user w password
-        const checkPassword = await user.authenticateUser(req.body.password);
+        const checkPassword = await user.authenticateUser(password);
         if(!checkPassword) throw new Error("Invalid Password!");
 
         // Generate Auth Token
@@ -340,7 +341,6 @@ exports.updateUserPassword = async (req, res) => {
 * @desc Render User Edit Page
 * @route GET /author/:username/edit
 * @access Private
-! To be tested
 */
 exports.toUserEdit = async (req, res) => {
     const { userId } = req.user;
@@ -359,6 +359,29 @@ exports.toUserEdit = async (req, res) => {
                 user,
             },
         });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
+}
+
+/* 
+* @desc Delete User
+* @route DELETE /api/deleteUser
+* @access Private
+*/
+exports.deleteUserAccount = async (req, res) => {
+    const { userId } = req.user;
+    const { password } = req.body;
+    try {
+        if(!password) throw new Error("Request body must contain {password: 'String'}");
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("Unable to find user");
+        const checkPassword = await user.authenticateUser(password);
+        if(!checkPassword) throw new Error("Invalid Password!");
+        await user.destroy();
+        res.cookie("authToken", "", {maxAge: 10})
+        res.status(204).json({message: "User account deleted Successfully"});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});

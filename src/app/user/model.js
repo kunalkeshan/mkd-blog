@@ -153,8 +153,6 @@ User.init({
 }, {
     sequelize,
     modelName: "test_user_details",
-    createdAt: "registeredAt",
-    updatedAt: "lastLogin",
     timestamps: false,
     hooks: {
         beforeSave: (user) => {

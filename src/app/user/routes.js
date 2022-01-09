@@ -34,6 +34,8 @@ Router.patch("/api/updatePassword", authenticate, userController.updateUserPassw
 
 Router.post("/api/logout", authenticate, userController.logoutUser);
 
+Router.delete("/api/deleteUser", authenticate, userController.deleteUserAccount);
+
 Router.get("/author/:username/edit", authenticate, userController.toUserEdit);
 
 module.exports = Router;
