@@ -1,7 +1,7 @@
 const User = require("./model");
 const validator = require("validator");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
-const { sendWelcomeEmail } = require("../../helper/mailer")
+// const { sendWelcomeEmail } = require("../../helper/mailer");
 
 
 /* ====================== 
@@ -86,10 +86,10 @@ exports.registerUser = async (req, res) => {
         const user = newUser.generateSanitizedUser();
 
         // Sending response
-        sendWelcomeEmail({
-            emailTo: user.email,
-            fullName: user.fullName,
-        });
+        // sendWelcomeEmail({
+        //     emailTo: user.email,
+        //     fullName: user.fullName,
+        // });
         res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!", user });
     } catch (error) {
         console.log(error);
