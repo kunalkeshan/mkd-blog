@@ -45,6 +45,7 @@ Users with or without the knowledge of Markdown can use the platform to create a
 8. Share to Social Media buttons. Copy it to Clipboard. 
 9. Highlight text and options to share it on twitter, and other social media along with copy to clipboard option.   
 10. Embed Article Option.
+
 # mkd-blog Worked With
 
 ---
@@ -71,4 +72,4 @@ Users with or without the knowledge of Markdown can use the platform to create a
 
 ## Quick Links
 
-📨 Bitly Mini Link to a detailed Documentation: [https://bit.ly/mkdBlogDevDocs](https://bit.ly/mkdBlogDevDocs)
+📨Detailed Development Documentation: [mkd-blog Dev Docs](https://bit.ly/mkdBlogDevDocs)
