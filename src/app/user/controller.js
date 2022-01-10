@@ -17,12 +17,11 @@ const { expireDuration } = require("../../helper/config");
 */
 exports.isUsernameUnique = async (req, res) => {
     const { username } = req.body;
-    console.log(typeof username, username);
     try {
         // Pre checks
         if(!username) throw new Error("Request Body should contain {username: 'String'}");
         if(typeof username !== "string") throw new Error(`{username} should be a string, cannot be ${typeof username}`);
-        
+
         // Find Username
         const checkUsername = await User.findAndCountAll({
             where: {
