@@ -1,9 +1,9 @@
 const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: {nanoidLength, saltRounds, jwtSecret}, expireDuration } = require("../../helper/config");
-const moment = require("moment");
 
 // JSON fields stored as string in database.
 const STRING_IN_DB = ["links", "bio"];
@@ -53,7 +53,7 @@ class User extends Model{
     }
 
     /** 
-    * @param {Array} of all Keys of the User object
+    * @param {array} args all Keys of the User object
     */
     convertToJSON(...args){
         for(const prop in this.toJSON()){

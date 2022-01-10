@@ -11,7 +11,7 @@ const appRouter = require("./src/app");
 // Initializing Express Application
 const app = express();
 
-app.disable("x-powered-by")
+app.disable("x-powered-by");
 
 // Setting up Middleware's 
 app.set("view engine", "ejs");
@@ -24,10 +24,6 @@ app.use(logger("tiny"));
 // Using App Router
 app.use("/", appRouter);
 
-app.get("/", (req, res) => {
-    res.status(200).send("Hi");
-})
-
 app.use((req, res, next) => {
     const error = new Error("Not Found");
     error.status = 404;
@@ -35,7 +31,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    console.log(error)
+    console.log(error);
     res.status(error.status || 500).render("serverError", {
         error: {
             status: error.status || 500,
@@ -45,6 +41,6 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(port, (err) => {
-    if(err) console.log(`Error in running server! Error: ${err}`);
-    else console.log(`Server running at http://localhost:${port}`);
+    if(err) console.log(`>>> Error in running server! Error: ${err}`);
+    else console.log(`>>> Server running at http://localhost:${port}`);
 });

@@ -22,9 +22,9 @@ const authenticateConnectionAndSync = async () => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
-        console.log(`Connected and Synced to ${dbName} Database!`);
+        console.log(`>>> Connected and Synced to ${dbName} Database!`);
     } catch (error) {
-        console.log(`Error Connecting to ${dbName} Database with error: ${error}`);
+        console.log(`>>> Error Connecting to ${dbName} Database with error: ${error}`);
     }
 }
 authenticateConnectionAndSync();
