@@ -24,9 +24,9 @@ const rebrandlyApp = new rebrandly({
 //     })
 
 /**
- * @param  {String} destination
- * @param  {String} articleId
- * @returns {Object} shortUrl and url id Rebrandly Short URL generated
+ * @param  {string} destination
+ * @param  {string} articleId
+ * @returns {object} shortUrl and url id Rebrandly Short URL generated
  */
 exports.generateMiniLink = async ({ destination = "", articleId = "" }) => {
   const { shortUrl, id } = rebrandlyApp.links.create({

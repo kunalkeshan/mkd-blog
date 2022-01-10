@@ -9,21 +9,23 @@ const { expireDuration } = require("../../helper/config");
     UNAUTHENTICATED CONTROLLERS
    ====================== */
 
-/* 
+/** 
 * @desc Check if Username already exists
 * @route GET /api/isUsernameUnique/
 * @data username as a string in the body
 * @access Public
 */
 exports.isUsernameUnique = async (req, res) => {
+    const { username } = req.body;
     try {
         // Pre checks
-        if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
+        if(!username) throw new Error("Request Body should contain {username: 'String'}");
+        if(typeof username !== "string") throw new Error(`{username} should be a string, cannot be ${typeof username}`);
 
         // Find Username
         const checkUsername = await User.findAndCountAll({
             where: {
-                username: req.body.username,
+                username: username,
             }
         });
         const isUsernameUnique = !checkUsername.count;
@@ -35,25 +37,27 @@ exports.isUsernameUnique = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Check if Email already exists
 * @route GET /api/isEmailUnique/
 * @data email as a string in the body
 * @access Public
 */
 exports.isEmailUnique = async (req, res) => {
+    const {email} = req.body;
     try {
         // Pre checks
-        if(!req.body.email) throw new Error("Request Body should contain {email: 'String'}");
+        if(!email) throw new Error("Request Body should contain {email: 'String'}");
+        if(typeof email !== "string") throw new Error(`{email} should be a string, cannot be ${typeof email}`);
         if(!validator.isEmail(req.body.email)) throw new Error("{email: 'Should be a valid Email'}");
 
         // Find email
-        const email = await User.findAndCountAll({
+        const emailCheck = await User.findAndCountAll({
             where: {
-                email: req.body.email,
+                email: email,
             }
         });
-        const isEmailUnique = !email.count;
+        const isEmailUnique = !emailCheck.count;
 
         res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
     } catch (error) {
@@ -62,17 +66,21 @@ exports.isEmailUnique = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Register a new User
 * @route POST /api/register/
 * @data the user details in the req body
 * @access Public
 */
 exports.registerUser = async (req, res) => {
-    const {email, password} = req.body;
+    const {email, password, fullName, username} = req.body;
     try {
         // Pre checks
-        if(!req.body.fullName || !req.body.email || !req.body.username || !req.body.password) throw new Error(`Request Body should contain {${req.body.fullName ? "" : " fullName,"}${req.body.username ? "" : " username,"}${req.body.email ? "" : " email,"}${req.body.password ? "" : " password"}}: 'String'`)
+        if(!fullName || !email || !username || !password) throw new Error(`Request Body should contain {${fullName ? "" : " fullName,"}${username ? "" : " username,"}${email ? "" : " email,"}${password ? "" : " password"}}: 'String'`);
+        if(typeof fullName !== "string" ) throw new Error(`{fullName} should be a string, cannot be a ${typeof fullName}`);
+        if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
+        if(typeof email !== "string" ) throw new Error(`{email} should be a string, cannot be a ${typeof email}`);
+        if(typeof password !== "string" ) throw new Error(`{password} should be a string, cannot be a ${typeof password}`);
         if(!validator.isEmail(email)) throw new Error("{email: 'Should be a valid Email'}");
         if(!validator.isStrongPassword(password)) throw Error("Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
 
@@ -99,7 +107,7 @@ exports.registerUser = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Login a user
 * @route POST /api/login/
 * @data the user details in the req body
@@ -114,9 +122,11 @@ exports.loginUser = async (req, res) => {
             if(!email) throw new Error("Request Body should contain {email: 'String'}");
         };
         if(email){
+            if(typeof email !== "string") throw new Error(`{email} should be a string, cannot be ${typeof email}`)
             if(!validator.isEmail(email)) throw new Error("Should be a valid email!");
         }
         if(!username && !isEmailLogin) throw new Error("Request Body should contain {username: 'String'}");
+        if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
 
         // Get User 
         const query = isEmailLogin ? {email} :  {username};
@@ -143,55 +153,59 @@ exports.loginUser = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Get user details with userId
 * @route GET /api/user/id
 * @data the userId in the req body
 * @access Public 
 */
 exports.getUserById = async (req, res) => {
+    const { userId } = req.body;
     try {
-        if(!req.body.userId) throw new Error("Request Body should contain {userId: 'String'}");
+        if(!userId) throw new Error("Request Body should contain {userId: 'String'}");
+        if(typeof userId !== "string" ) throw new Error(`{userId} should be a string, cannot be a ${typeof userId}`);
 
-        const userById = await User.findByPk(req.body.userId);
+        const userById = await User.findByPk(userId);
         if(!userById) throw new Error("No Such User Found");
 
         // Update user before sending
         const user = userById.generateSanitizedUser();
         
-        res.status(200).json({message: `User with userId: '${req.body.userId}' found.`, user});
+        res.status(200).json({message: `User with userId: '${userId}' found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
     }
 }
 
-/* 
+/** 
 * @desc Get user details with username
 * @route GET /api/user/username
 * @data the username in the req body
 * @access Public
 */
 exports.getUserByUsername = async (req, res) => {
+    const { username } = req.body;
     try {
-        if(!req.body.username) throw new Error("Request Body should contain {username: 'String'}");
+        if(!username) throw new Error("Request Body should contain {username: 'String'}");
+        if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
 
         const userByUsername = await User.findOne({where: {
-            username: req.body.username,
+            username,
         }});
         if(!userByUsername) throw new Error("No Such User Found");
 
         // Update user before sending
         const user = userByUsername.generateSanitizedUser();
 
-        res.status(200).json({message: `User with username: '${req.body.username}' found.`, user});
+        res.status(200).json({message: `User with username: '${username}' found.`, user});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
     }
 }
 
-/* 
+/** 
 * @desc Render the user profile with username
 * @route GET /author/:username
 * @data the username in the req params
@@ -226,7 +240,7 @@ exports.toUserProfile = async (req, res) => {
     AUTHENTICATED CONTROLLERS
    ====================== */
 
-/* 
+/** 
 * @desc Update User Bio
 * @route PATCH /api/updateBio
 * @data bio in request body
@@ -234,11 +248,12 @@ exports.toUserProfile = async (req, res) => {
 */
 exports.updateBio = async (req, res) => {
     const { userId } = req.user;
+    const { bio } = req.body;
     try {
-        if(!req.body.bio) throw new Error("Request body must contain {bio: 'Object'}");
+        if(!bio) throw new Error("Request body must contain {bio: 'Object'}");
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        console.log(await user.update({bio: JSON.stringify(req.body.bio)}));
+        console.log(await user.update({bio: JSON.stringify(bio)}));
         res.status(201).json({message: "Bio Updated Successfully"});
     } catch (error) {
         console.log(error);
@@ -246,7 +261,7 @@ exports.updateBio = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Update User Links
 * @route PATCH /api/updateLinks
 * @data links in request body
@@ -259,7 +274,8 @@ exports.updateLinks = async (req, res) => {
         if(!links) throw new Error("Request Body should contain {links: 'Object'}");
         for(const link in links){
             const url = links[link];
-            if(!validator.isURL(url)) throw new Error(`${link} link is not valid!`);
+                if(typeof url !== "string" ) throw new Error(`${link} should be a string, cannot be a ${typeof url}`);
+                if(!validator.isURL(url)) throw new Error(`${link} link is not valid!`);
         }
 
         const user = await User.findByPk(userId);
@@ -273,7 +289,7 @@ exports.updateLinks = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Update User details
 * @route PATCH /api/updateUserDetails
 * @data fullName, username, email in request body
@@ -317,7 +333,7 @@ exports.updateUserDetails = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Update User Password
 * @route PATCH /api/updatePassword
 * @data old and new password in request body
@@ -344,7 +360,7 @@ exports.updateUserPassword = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Render User Edit Page
 * @route GET /author/:username/edit
 * @access Private
@@ -372,7 +388,7 @@ exports.toUserEdit = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Delete a User
 * @route DELETE /api/deleteUser
 * @access Private
@@ -382,6 +398,7 @@ exports.deleteUserAccount = async (req, res) => {
     const { password } = req.body;
     try {
         if(!password) throw new Error("Request body must contain {password: 'String'}");
+        if(typeof password !== "string" ) throw new Error(`{password} should be a string, cannot be a ${typeof password}`);
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Unable to find user");
         const checkPassword = await user.authenticateUser(password);
@@ -395,7 +412,7 @@ exports.deleteUserAccount = async (req, res) => {
     }
 }
 
-/* 
+/** 
 * @desc Logout User and Clear Cookie
 * @route POST /api/logout
 * @access Private

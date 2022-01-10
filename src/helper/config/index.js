@@ -4,7 +4,7 @@ module.exports = {
     port: process.env.PORT,
     nodeEnvironment: process.env.NODE_ENV,
     baseUrl: process.env.BASE_URL,
-    expireDuration: 8.64e+7,
+    expireDuration: 8.64e+7, // 1 Day
     database: {
         development: {
             host: process.env.DB_DEV_HOST, 

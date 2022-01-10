@@ -10,7 +10,11 @@ let mailTransporter = nodemailer.createTransport({
       pass: password,
     },
   });
-
+  
+/**
+ * @param  {String} emailTo To whom should the email to send to
+ * @param  {String} fullName Name of the person to email
+ */
 exports.sendWelcomeEmail = ({emailTo, fullName}) => {
     const mailConfig = {
         from: `Team Markdown Blog <${email}>`,
