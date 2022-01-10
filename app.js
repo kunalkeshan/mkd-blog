@@ -3,7 +3,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const path = require("path");
-const { port, secrets: { cookieSecret } } = require("./src/helper/config");
+const { port, secrets: { cookieSecret }, nodeEnvironment, appType } = require("./src/helper/config");
 
 // Importing App Router
 const appRouter = require("./src/app");
@@ -19,25 +19,30 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser(cookieSecret));
-app.use(logger("tiny"));
+app.use(logger(nodeEnvironment === "development" ? "dev" : "combined"));
 
 // Using App Router
 app.use("/", appRouter);
 
+// Handling 404 Errors
 app.use((req, res, next) => {
-    const error = new Error("Not Found");
+    const error = new Error("Page Not Found!");
     error.status = 404;
     next(error);
 });
 
+// Handling Server Errors
 app.use((error, req, res, next) => {
-    console.log(error);
+    console.log(error.stack);
+    if(appType !== "traditional") return res.status(error.status || 500).json({message: (error.message || "Internal Server Error!")});
+
     res.status(error.status || 500).render("serverError", {
         error: {
             status: error.status || 500,
-            message: error.message || "Internal Server Error",
+            message: error.message || "Internal Server Error!",
         },
-    });
+    }); 
+    
 });
 
 app.listen(port, (err) => {

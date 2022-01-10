@@ -16,7 +16,7 @@ const authenticate = (req, res, next) => {
             req.token = token;
             req.user = user;
             next();
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.clearCookie("authToken").redirect("/");

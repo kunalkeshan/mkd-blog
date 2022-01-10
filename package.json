@@ -6,7 +6,7 @@
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
-    "start": "echo \"Initializing Server\" node .",
+    "start": "echo \"Initializing Server\" node app.js",
     "sass": "node-sass -w src/helper/sass -o public/css",
     "devStart": "echo \"Starting Local Development Environment\" && nodemon ."
   },
@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "marked": "^4.0.8",
     "moment": "^2.29.1",
+    "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "nanoid": "^3.1.30",
     "nodemailer": "^6.7.2",
@@ -32,7 +33,6 @@
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
-    "morgan": "^1.10.0",
     "node-sass": "^7.0.1",
     "nodemon": "^2.0.15"
   }
