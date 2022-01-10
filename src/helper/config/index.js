@@ -4,6 +4,7 @@ module.exports = {
     port: process.env.PORT,
     nodeEnvironment: process.env.NODE_ENV,
     baseUrl: process.env.BASE_URL,
+    expireDuration: 8.64e+7,
     database: {
         development: {
             host: process.env.DB_DEV_HOST, 
@@ -27,6 +28,7 @@ module.exports = {
     },
     secrets: {
         jwtSecret: process.env.JWT_SECRET,
+        cookieSecret: process.env.COOKIE_SECRET,
         saltRounds: parseInt(process.env.SALT, 10),
         nanoidLength: parseInt(process.env.NANOID_LENGTH, 10),
         idLength: parseInt(process.env.ID_LENGTH, 10),

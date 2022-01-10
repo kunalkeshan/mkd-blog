@@ -2,7 +2,7 @@ const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
-const {  secrets: {nanoidLength, saltRounds, jwtSecret} } = require("../../helper/config");
+const {  secrets: {nanoidLength, saltRounds, jwtSecret}, expireDuration } = require("../../helper/config");
 const moment = require("moment");
 
 // JSON fields stored as string in database.
@@ -26,7 +26,7 @@ class User extends Model{
 
     // Generate Auth token from user object
     generateAuthToken(){
-        return jwt.sign(this.toJSON(), jwtSecret, {expiresIn: "1d"});
+        return jwt.sign(this.toJSON(), jwtSecret, {expiresIn: expireDuration});
     };
 
     // get sanitized user, delete password and date in readable format
