@@ -2,6 +2,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../../app/user/model");
 const {  secrets: { jwtSecret } } = require("../config");
 
+/* 
+* @desc Middleware that authenticates if the user is Logged In
+*/
 const authenticate = (req, res, next) => {
     try {
         const token = req.signedCookies.authToken;

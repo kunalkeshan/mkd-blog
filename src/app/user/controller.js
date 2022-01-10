@@ -106,15 +106,20 @@ exports.registerUser = async (req, res) => {
 * @access Public
 */
 exports.loginUser = async (req, res) => {
-    const {email = "", username = "", password} = req.body;
-    const isEmailLogin = validator.isEmail(email);
+    const {email = "", username = "", type, password} = req.body;
+    const isEmailLogin = type === "email";
     try {
         // Pre Check
-        if(!email && isEmailLogin) throw new Error("Request Body should contain {email: 'String'}");
+        if(!email && isEmailLogin) {
+            if(!email) throw new Error("Request Body should contain {email: 'String'}");
+        };
+        if(email){
+            if(!validator.isEmail(email)) throw new Error("Should be a valid email!");
+        }
         if(!username && !isEmailLogin) throw new Error("Request Body should contain {username: 'String'}");
 
         // Get User 
-        const query = isEmailLogin ? {email: email} :  {username: username};
+        const query = isEmailLogin ? {email} :  {username};
         const user = await User.findOne({where: query});
         if(!user) throw new Error("No Such User Exists");
 
@@ -276,7 +281,7 @@ exports.updateLinks = async (req, res) => {
 */
 exports.updateUserDetails = async (req, res) => {
     const { userId } = req.user;
-    const {fullName, username, email} = req.body
+    const {fullName, username, email} = req.body;
     try {
         // pre checks
         if(!fullName || !username || !email) throw new Error(`Request body should contain { ${fullName ? "" : "fullName,"}${username ? "" : " username,"}${email ? "" : " email"} }`);
@@ -351,7 +356,7 @@ exports.toUserEdit = async (req, res) => {
         if(!user) throw new Error("Error finding User");
         user = user.generateSanitizedUser();
         renderAppPage({
-            res: res,
+            res,
             renderTo: "profile-edit",
             options: {
                 page: {
