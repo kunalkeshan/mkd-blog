@@ -1,7 +1,8 @@
 const User = require("./model");
 const validator = require("validator");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
-// const { sendWelcomeEmail } = require("../../helper/mailer");
+const { expireDuration } = require("../../helper/config");
+// const { sendWelcomeEmail } = require("../../helper/mailer"); // Work in progress
 
 
 /* ====================== 
@@ -90,7 +91,8 @@ exports.registerUser = async (req, res) => {
         //     emailTo: user.email,
         //     fullName: user.fullName,
         // });
-        res.status(201).cookie("authToken", token).json({ message: "Account Registered Successfully!", user });
+        res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
+        res.status(201).json({ message: "Account Registered Successfully!", user });
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
@@ -128,7 +130,8 @@ exports.loginUser = async (req, res) => {
         const loggedInUser = user.generateSanitizedUser();
 
         // Sending response
-        res.status(200).cookie("authToken", token).json({message: "Login Successful!", user: loggedInUser});
+        res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
+        res.status(200).json({message: "Login Successful!", user: loggedInUser});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
@@ -198,7 +201,6 @@ exports.toUserProfile = async (req, res) => {
             username
         }});
         if(!user) throw new Error("No Such User Found");
-
         isCurrentUser = isCurrentUser.userId === user.userId;  
         renderAppPage({res, renderTo: "profile", options: {
                 page: {
@@ -206,7 +208,7 @@ exports.toUserProfile = async (req, res) => {
                     link: "profile",
                 },
                 isCurrentUser, 
-                user,
+                user: user.generateSanitizedUser(),
             },
         });
     } catch (error) {

@@ -6,7 +6,7 @@ const Article = require("./article/model");
    ====================== */
 
 exports.toIndex = (req, res) => {
-    const token = req.cookies.authToken;
+    const token = req.signedCookies.authToken;
     if(token) return res.redirect("/home");
     renderAppPage({res, renderTo: "index", options: {
         page: {

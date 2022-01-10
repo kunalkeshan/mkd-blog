@@ -3,7 +3,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const path = require("path");
-const { port } = require("./src/helper/config");
+const { port, secrets: { cookieSecret } } = require("./src/helper/config");
 
 // Importing App Router
 const appRouter = require("./src/app");
@@ -18,7 +18,7 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
+app.use(cookieParser(cookieSecret));
 app.use(logger("tiny"));
 
 // Using App Router
