@@ -35,6 +35,13 @@ class User extends Model{
         delete user.hashedPassword;
         user.lastLogin = moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
         user.registeredAt = moment(user.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
+        STRING_IN_DB.forEach((string) => {
+            for(const prop in user){
+                if(prop === string){
+                    user[prop] = JSON.parse(user[prop])
+                }                
+            }
+        });
         return user;
 
     }
@@ -55,23 +62,29 @@ class User extends Model{
     /** 
     * @param {array} args all Keys of the User object
     */
-    convertToJSON(...args){
-        for(const prop in this.toJSON()){
-            args.forEach((arg) => {
-                this[prop] = arg === prop ? JSON.parse(this[prop]) : this[prop];                
-            });
-        };
+    convertToJSON(args){
+        const userInstance = this.toJSON();
+        args.forEach((arg) => {
+            for(const prop in userInstance){
+                if(arg === prop){
+                    userInstance[prop] = JSON.parse(userInstance[prop])
+                }                
+            }
+        });
     };
 
     /** 
     * @param {Array} of all Keys of the User object
     */
     convertToString(...args){
-        for(const prop in this.toJSON()){
-            args.forEach((arg) => {
-                this[prop] = arg === prop ? JSON.stringify(this[prop]) : this[prop];                
-            });
-        };
+        const userInstance = this.toJSON();
+        args.forEach((arg) => {
+            for(const prop in userInstance){
+                if(arg === prop){
+                    userInstance[prop] = JSON.parse(userInstance[prop]);
+                }                
+            }
+        });
     };
 
     // Static Methods
@@ -155,9 +168,10 @@ User.init({
     modelName: "test_user_details",
     timestamps: false,
     hooks: {
-        beforeSave: (user) => {
-            const isNewUser = user.lastLogin.toString() === user.registeredAt.toString()
-            if(!isNewUser) return;
+        beforeSave: async (user) => {
+            if(!user.isNewRecord) return;
+            const err = await user.validate()
+            console.log(err, "in before sync")
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);
@@ -165,6 +179,9 @@ User.init({
         afterSave: (user) => {
             user.convertToJSON(STRING_IN_DB);
         },
+        beforeUpdate: (user) => {
+            user.convertToString(STRING_IN_DB);
+        }
     },
 });
 
