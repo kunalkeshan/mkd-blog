@@ -35,7 +35,6 @@ class User extends Model{
         delete user.hashedPassword;
         user.lastLogin = moment(user.lastLogin).format("MMMM Do YYYY, h:mm:ss a");
         user.registeredAt = moment(user.registeredAt).format("MMMM Do YYYY, h:mm:ss a");
-        let count = 0;
         STRING_IN_DB.forEach((string) => {
             for(const prop in user){
                 if(prop === string){
@@ -43,7 +42,6 @@ class User extends Model{
                 }                
             }
         });
-        console.log(count)
         return user;
 
     }
@@ -83,7 +81,7 @@ class User extends Model{
         args.forEach((arg) => {
             for(const prop in userInstance){
                 if(arg === prop){
-                    userInstance[prop] = JSON.parse(userInstance[prop])
+                    userInstance[prop] = JSON.parse(userInstance[prop]);
                 }                
             }
         });
@@ -170,8 +168,10 @@ User.init({
     modelName: "test_user_details",
     timestamps: false,
     hooks: {
-        beforeSave: (user) => {
+        beforeSave: async (user) => {
             if(!user.isNewRecord) return;
+            const err = await user.validate()
+            console.log(err, "in before sync")
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);

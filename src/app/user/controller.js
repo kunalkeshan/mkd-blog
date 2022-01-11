@@ -21,6 +21,7 @@ exports.isUsernameUnique = async (req, res) => {
         // Pre checks
         if(!username) throw new Error("Request Body should contain {username: 'String'}");
         if(typeof username !== "string") throw new Error(`{username} should be a string, cannot be ${typeof username}`);
+        if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
 
         // Find Username
         const checkUsername = await User.findAndCountAll({
@@ -83,6 +84,7 @@ exports.registerUser = async (req, res) => {
         if(typeof password !== "string" ) throw new Error(`{password} should be a string, cannot be a ${typeof password}`);
         if(!validator.isEmail(email)) throw new Error("{email: 'Should be a valid Email'}");
         if(!validator.isStrongPassword(password)) throw Error("Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
+        if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
 
         // Saving new User
         const newUser = User.build({hashedPassword: req.body.password,...req.body});
@@ -126,7 +128,10 @@ exports.loginUser = async (req, res) => {
             if(!validator.isEmail(email)) throw new Error("Should be a valid email!");
         }
         if(!username && !isEmailLogin) throw new Error("Request Body should contain {username: 'String'}");
-        if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
+        if(username){
+            if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
+            if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
+        }
 
         // Get User 
         const query = isEmailLogin ? {email} :  {username};
@@ -189,6 +194,7 @@ exports.getUserByUsername = async (req, res) => {
     try {
         if(!username) throw new Error("Request Body should contain {username: 'String'}");
         if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
+        if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
 
         const userByUsername = await User.findOne({where: {
             username,
@@ -302,6 +308,7 @@ exports.updateUserDetails = async (req, res) => {
         // pre checks
         if(!fullName || !username || !email) throw new Error(`Request body should contain { ${fullName ? "" : "fullName,"}${username ? "" : " username,"}${email ? "" : " email"} }`);
         if(!validator.isEmail(email)) throw new Error("Email Invalid, should be {email: 'String'}");
+        if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
 
         // Check username existence
         let belongsToUser;
