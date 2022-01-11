@@ -220,7 +220,7 @@ exports.toUserProfile = async (req, res) => {
             username
         }});
         if(!user) throw new Error("No Such User Found");
-        isCurrentUser = isCurrentUser.userId === user.userId;  
+        isCurrentUser = isCurrentUser.userId === user.userId;
         renderAppPage({res, renderTo: "profile", options: {
                 page: {
                     title: `${username} | Mkd Blog`,
@@ -253,7 +253,7 @@ exports.updateBio = async (req, res) => {
         if(!bio) throw new Error("Request body must contain {bio: 'Object'}");
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        console.log(await user.update({bio: JSON.stringify(bio)}));
+        await user.update({bio: JSON.stringify(bio)});
         res.status(201).json({message: "Bio Updated Successfully"});
     } catch (error) {
         console.log(error);
