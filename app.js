@@ -28,6 +28,7 @@ app.use("/", appRouter);
 app.use((req, res, next) => {
     const error = new Error("Page Not Found!");
     error.status = 404;
+    error.url = req.originalUrl;
     next(error);
 });
 
@@ -40,6 +41,7 @@ app.use((error, req, res, next) => {
         error: {
             status: error.status || 500,
             message: error.message || "Internal Server Error!",
+            url: error.url || "Page",
         },
     }); 
     

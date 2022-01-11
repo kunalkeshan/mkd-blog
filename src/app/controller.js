@@ -17,6 +17,10 @@ exports.toIndex = (req, res) => {
     }});
 }
 
+exports.redirectToIndex = (req, res) => {
+    res.redirect("/");
+}
+
 /* ====================== 
     AUTHENTICATED CONTROLLERS
    ====================== */

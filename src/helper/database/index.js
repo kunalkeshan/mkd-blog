@@ -8,7 +8,7 @@ const isDevelopment = nodeEnvironment === "development";
 // Accessing Database Configs
 const { host, user, password, database: dbName} = isDevelopment ? db.development : db.production;
 
-// Creating Sequelize Connection
+// Creating Connection Instance from Sequelize
 const sequelize = new Sequelize(dbName, user, password, {
     host,
     dialect: db.dialect,
