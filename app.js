@@ -1,3 +1,5 @@
+"use strict";
+
 // Importing Packages
 const express = require("express");
 const cookieParser = require("cookie-parser");
@@ -44,7 +46,7 @@ app.use((error, req, res, next) => {
             url: error.url || "Page",
         },
     }); 
-    
+
 });
 
 app.listen(port, (err) => {

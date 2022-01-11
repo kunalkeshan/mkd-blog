@@ -1,3 +1,5 @@
+"use strict";
+
 const User = require("./model");
 const validator = require("validator");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
@@ -26,15 +28,15 @@ exports.isUsernameUnique = async (req, res) => {
         // Find Username
         const checkUsername = await User.findAndCountAll({
             where: {
-                username: username,
+                username,
             }
         });
         const isUsernameUnique = !checkUsername.count;
 
-        res.status(200).json({message: `Username is${isUsernameUnique ? "": " not"} available`, isUsernameUnique});
+        return res.status(200).json({message: `Username is${isUsernameUnique ? "": " not"} available`, isUsernameUnique});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -60,10 +62,10 @@ exports.isEmailUnique = async (req, res) => {
         });
         const isEmailUnique = !emailCheck.count;
 
-        res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
+        return res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -102,10 +104,10 @@ exports.registerUser = async (req, res) => {
         //     fullName: user.fullName,
         // });
         res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
-        res.status(201).json({ message: "Account Registered Successfully!", user });
+        return res.status(201).json({ message: "Account Registered Successfully!", user });
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
+        return res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
     }
 }
 
@@ -151,10 +153,10 @@ exports.loginUser = async (req, res) => {
 
         // Sending response
         res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
-        res.status(200).json({message: "Login Successful!", user: loggedInUser});
+        return res.status(200).json({message: "Login Successful!", user: loggedInUser});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
+        return res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
     }
 }
 
@@ -176,10 +178,10 @@ exports.getUserById = async (req, res) => {
         // Update user before sending
         const user = userById.generateSanitizedUser();
         
-        res.status(200).json({message: `User with userId: '${userId}' found.`, user});
+        return res.status(200).json({message: `User with userId: '${userId}' found.`, user});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -204,10 +206,10 @@ exports.getUserByUsername = async (req, res) => {
         // Update user before sending
         const user = userByUsername.generateSanitizedUser();
 
-        res.status(200).json({message: `User with username: '${username}' found.`, user});
+        return res.status(200).json({message: `User with username: '${username}' found.`, user});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -227,7 +229,7 @@ exports.toUserProfile = async (req, res) => {
         }});
         if(!user) throw new Error("No Such User Found");
         isCurrentUser = isCurrentUser.userId === user.userId;
-        renderAppPage({res, renderTo: "profile", options: {
+        return renderAppPage({res, renderTo: "profile", options: {
                 page: {
                     title: `${username} | Mkd Blog`,
                     link: "profile",
@@ -238,7 +240,7 @@ exports.toUserProfile = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -260,10 +262,10 @@ exports.updateBio = async (req, res) => {
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
         await user.update({bio: JSON.stringify(bio)});
-        res.status(201).json({message: "Bio Updated Successfully"});
+        return res.status(201).json({message: "Bio Updated Successfully"});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -288,10 +290,10 @@ exports.updateLinks = async (req, res) => {
         if(!user) throw new Error("Error finding user");
         await user.update({links: JSON.stringify(links)});
 
-        res.status(201).json({message: "Links Updated Successfully"});
+        return res.status(201).json({message: "Links Updated Successfully"});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -333,7 +335,7 @@ exports.updateUserDetails = async (req, res) => {
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
         await user.update(req.body)
-        res.status(201).json({message: "User details updated successfully"});
+        return res.status(201).json({message: "User details updated successfully"});
     } catch (error) {
         console.log(error);
         res.status(400).json({message: error.message});
@@ -359,11 +361,12 @@ exports.updateUserPassword = async (req, res) => {
         if(!valid) throw new Error("Wrong Password!");
         if(oldPassword === newPassword) throw new Error("Old password cannot be the same as new password!");
         if(!validator.isStrongPassword(newPassword)) throw Error("New Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
+
         await user.updatePasswordAndReturnUser(newPassword);
-        res.status(201).json({message: "Password updated successfully!"});
+        return res.status(201).json({message: "Password updated successfully!"});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -378,7 +381,7 @@ exports.toUserEdit = async (req, res) => {
         let user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
         user = user.generateSanitizedUser();
-        renderAppPage({
+        return renderAppPage({
             res,
             renderTo: "profile-edit",
             options: {
@@ -391,7 +394,7 @@ exports.toUserEdit = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -410,12 +413,13 @@ exports.deleteUserAccount = async (req, res) => {
         if(!user) throw new Error("Unable to find user");
         const checkPassword = await user.authenticateUser(password);
         if(!checkPassword) throw new Error("Invalid Password!");
+
         await user.destroy();
         res.cookie("authToken", "", {maxAge: 10});
-        res.status(204).json({message: "User account deleted Successfully"});
+        return res.status(200).json({message: "User account deleted Successfully"});
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message});
     }
 }
 
@@ -426,5 +430,5 @@ exports.deleteUserAccount = async (req, res) => {
 */
 exports.logoutUser = (req, res) => {
     if(!req.user) res.status(400).json({message: "Unable to Logout."});
-    res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "Logged Out successfully"});
+    return res.status(200).cookie("authToken", "", {maxAge: 10}).json({message: "Logged Out successfully"});
 }

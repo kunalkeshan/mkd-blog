@@ -1,3 +1,5 @@
+"use strict";
+
 exports.parseData = (data) => {
     JSON.parse(JSON.stringify(data));
 }

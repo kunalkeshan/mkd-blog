@@ -1,3 +1,5 @@
+"use strict";
+
 // Importing Packages 
 const Sequelize = require("sequelize");
 const { database: db, nodeEnvironment } = require("../config");

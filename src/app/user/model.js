@@ -1,3 +1,5 @@
+"use strict";
+
 const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -38,7 +40,7 @@ class User extends Model{
         STRING_IN_DB.forEach((string) => {
             for(const prop in user){
                 if(prop === string){
-                    user[prop] = JSON.parse(user[prop])
+                    user[prop] = JSON.parse(user[prop]);
                 }                
             }
         });
@@ -170,8 +172,6 @@ User.init({
     hooks: {
         beforeSave: async (user) => {
             if(!user.isNewRecord) return;
-            const err = await user.validate()
-            console.log(err, "in before sync")
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);

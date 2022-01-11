@@ -1,3 +1,5 @@
+"use strict";
+
 const {nanoid} = require("nanoid");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: { idLength } } = require("../../helper/config");
@@ -40,9 +42,15 @@ Article.init({
     }
 }, {
     sequelize,
-    modelName: "test_articles"
+    modelName: "test_articles",
+    hooks: {
+        afterFind: (article) => {
+            console.log(article, "in hook")
+        },
+    }
 });
 
+// Foreign Relations with other Models
 User.hasMany(Article, {
     foreignKey: {
         name: "userId"

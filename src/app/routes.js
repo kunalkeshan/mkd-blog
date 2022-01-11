@@ -1,3 +1,5 @@
+"use strict";
+
 const Router = require("express").Router();
 const authenticate = require("../helper/middleware/auth");
 
