@@ -36,6 +36,9 @@ module.exports = {
         nanoidLength: parseInt(process.env.NANOID_LENGTH, 10),
         idLength: parseInt(process.env.ID_LENGTH, 10),
     },
+    tinyMce: {
+        tinyMceApiKey: process.env.TINYMCE_API_KEY,
+    },
     cloudinary: {
         cloudinaryUrl: process.env.CLOUDINARY_URL,
         cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,

@@ -56,7 +56,7 @@ class User extends Model{
     }
 
     // Validate right password
-     async authenticateUser(password = ""){
+    async authenticateUser(password = ""){
         const valid = await bcrypt.compare(password, this.hashedPassword); 
         return valid;
     }

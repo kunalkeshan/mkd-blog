@@ -16,12 +16,12 @@ const authenticate = (req, res, next) => {
             const user = await User.findByPk(decoded.userId);
             if(!user) throw new Error("Unable to find user.");
             req.token = token;
-            req.user = user;
-            next();
+            req.user = user.toJSON();
+            return next();
         });
     } catch (error) {
         console.log(error);
-        res.clearCookie("authToken").redirect("/");
+        return res.status(401).clearCookie("authToken").redirect("/");
     }
 }
 

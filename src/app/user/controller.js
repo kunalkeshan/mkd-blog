@@ -33,10 +33,16 @@ exports.isUsernameUnique = async (req, res) => {
         });
         const isUsernameUnique = !checkUsername.count;
 
-        return res.status(200).json({message: `Username is${isUsernameUnique ? "": " not"} available`, isUsernameUnique});
+        return res
+                .status(200)
+                .json({
+                    message: `Username is${isUsernameUnique ? "": " not"} available`, 
+                    data: {isUsernameUnique}, 
+                    success: true,
+                });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -62,10 +68,16 @@ exports.isEmailUnique = async (req, res) => {
         });
         const isEmailUnique = !emailCheck.count;
 
-        return res.status(200).json({message: `Email is${isEmailUnique ? "" : " not"} available`, isEmailUnique});
+        return res
+                .status(200)
+                .json({
+                    message: `Email is${isEmailUnique ? "" : " not"} available`, 
+                    data: {isEmailUnique},
+                    success: true,
+                });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -104,10 +116,23 @@ exports.registerUser = async (req, res) => {
         //     fullName: user.fullName,
         // });
         res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
-        return res.status(201).json({ message: "Account Registered Successfully!", user });
+        return res
+                .status(201)
+                .json({
+                        message: "Account Registered Successfully!", 
+                        data: {user},
+                        success: true, 
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
+        return res
+                .status(400)
+                .json({
+                        message: error.message, 
+                        sqlMessage: error.errors && error?.errors[0]?.message,
+                        data: {},
+                        success: false
+                    });
     }
 }
 
@@ -153,10 +178,23 @@ exports.loginUser = async (req, res) => {
 
         // Sending response
         res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
-        return res.status(200).json({message: "Login Successful!", user: loggedInUser});
+        return res
+                .status(200)
+                .json({
+                    message: "Login Successful!", 
+                    data: {user: loggedInUser},
+                    success: true,
+                });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message, sqlMessage: error.errors && error?.errors[0]?.message});
+        return res
+                .status(400)
+                .json({
+                    message: error.message, 
+                    sqlMessage: error.errors && error?.errors[0]?.message,
+                    data: {},
+                    success: false,
+                });
     }
 }
 
@@ -169,19 +207,26 @@ exports.loginUser = async (req, res) => {
 exports.getUserById = async (req, res) => {
     const { userId } = req.body;
     try {
+        // Pre Checks
         if(!userId) throw new Error("Request Body should contain {userId: 'String'}");
         if(typeof userId !== "string" ) throw new Error(`{userId} should be a string, cannot be a ${typeof userId}`);
 
+        // Finding User
         const userById = await User.findByPk(userId);
         if(!userById) throw new Error("No Such User Found");
 
         // Update user before sending
         const user = userById.generateSanitizedUser();
-        
-        return res.status(200).json({message: `User with userId: '${userId}' found.`, user});
+        return res
+                .status(200)
+                .json({
+                        message: `User with userId: '${userId}' found.`, 
+                        data: {user},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false,});
     }
 }
 
@@ -194,22 +239,28 @@ exports.getUserById = async (req, res) => {
 exports.getUserByUsername = async (req, res) => {
     const { username } = req.body;
     try {
+        // Pre Checks
         if(!username) throw new Error("Request Body should contain {username: 'String'}");
         if(typeof username !== "string" ) throw new Error(`{username} should be a string, cannot be a ${typeof username}`);
         if(username.length < 8 || username.length > 16) throw new Error("{username} should have a minimum length of 8 characters and maximum of 16 characters");
 
-        const userByUsername = await User.findOne({where: {
-            username,
-        }});
+        // Finding User
+        const userByUsername = await User.findOne({where: {username}});
         if(!userByUsername) throw new Error("No Such User Found");
 
         // Update user before sending
         const user = userByUsername.generateSanitizedUser();
 
-        return res.status(200).json({message: `User with username: '${username}' found.`, user});
+        return res
+                .status(200)
+                .json({
+                        message: `User with username: '${username}' found.`,
+                        data: {user},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false,});
     }
 }
 
@@ -223,24 +274,27 @@ exports.toUserProfile = async (req, res) => {
     const { username } = req.params;
     const token = req.cookies.authToken;
     try {
+        // Pre checks
         let isCurrentUser = token ? await User.getUserFromAuthToken(token) : false;
-        const user = await User.findOne({where: {
-            username
-        }});
+        const user = await User.findOne({where: {username}});
         if(!user) throw new Error("No Such User Found");
+        
+        // Check if user is checking their own profile
         isCurrentUser = isCurrentUser.userId === user.userId;
         return renderAppPage({res, renderTo: "profile", options: {
                 page: {
                     title: `${username} | Mkd Blog`,
                     link: "profile",
                 },
-                isCurrentUser, 
-                user: user.generateSanitizedUser(),
+                data: {
+                    isCurrentUser, 
+                    user: user.generateSanitizedUser(),
+                },
             },
         });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -258,14 +312,29 @@ exports.updateBio = async (req, res) => {
     const { userId } = req.user;
     const { bio } = req.body;
     try {
+        // Pre Checks
         if(!bio) throw new Error("Request body must contain {bio: 'Object'}");
+        for(const prop in bio){
+            const userBio = bio[prop];
+            if(typeof userBio !== "string") throw new Error(`{bio} properties must be string, ${prop} is not of type string`)
+        }
+
+        // Finding User
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
+
+        // Updating User Bio
         await user.update({bio: JSON.stringify(bio)});
-        return res.status(201).json({message: "Bio Updated Successfully"});
+        return res
+                .status(200)
+                .json({
+                        message: "Bio Updated Successfully",
+                        data: {bio},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -279,6 +348,7 @@ exports.updateLinks = async (req, res) => {
     const { userId } = req.user;
     const { links } = req.body;
     try {
+        // Pre Checks
         if(!links) throw new Error("Request Body should contain {links: 'Object'}");
         for(const link in links){
             const url = links[link];
@@ -286,14 +356,22 @@ exports.updateLinks = async (req, res) => {
                 if(!validator.isURL(url)) throw new Error(`${link} link is not valid!`);
         }
 
+        // Finding User
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
-        await user.update({links: JSON.stringify(links)});
 
-        return res.status(201).json({message: "Links Updated Successfully"});
+        // Updating User Links
+        await user.update({links: JSON.stringify(links)});
+        return res
+                .status(200)
+                .json({
+                        message: "Links Updated Successfully",
+                        data: {links},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -335,10 +413,16 @@ exports.updateUserDetails = async (req, res) => {
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding user");
         await user.update(req.body)
-        return res.status(201).json({message: "User details updated successfully"});
+        return res
+                .status(200)
+                .json({
+                        message: "User details updated successfully",
+                        data: {},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        res.status(400).json({message: error.message});
+        res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -352,21 +436,31 @@ exports.updateUserPassword = async (req, res) => {
     const { userId } = req.user;
     const { oldPassword, newPassword } = req.body;
     try {
+        // Pre checks
         if(!oldPassword || !newPassword) throw new Error(`Request Body should contain {${oldPassword ? "" : " oldPassword,"}${newPassword ? "" : " newPassword"} }`);
 
+        // Finding User
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
 
+        // Validating before updating user password
         const valid = await user.authenticateUser(oldPassword);
         if(!valid) throw new Error("Wrong Password!");
         if(oldPassword === newPassword) throw new Error("Old password cannot be the same as new password!");
         if(!validator.isStrongPassword(newPassword)) throw Error("New Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,");
 
+        // Update User Password
         await user.updatePasswordAndReturnUser(newPassword);
-        return res.status(201).json({message: "Password updated successfully!"});
+        return res
+                .status(200)
+                .json({
+                        message: "Password updated successfully!",
+                        data: {},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -378,8 +472,11 @@ exports.updateUserPassword = async (req, res) => {
 exports.toUserEdit = async (req, res) => {
     const { userId } = req.user;
     try {
+        // Find User
         let user = await User.findByPk(userId);
         if(!user) throw new Error("Error finding User");
+
+        // Get user details for frontend only
         user = user.generateSanitizedUser();
         return renderAppPage({
             res,
@@ -389,12 +486,14 @@ exports.toUserEdit = async (req, res) => {
                     title: `${user.username} | Mkd Blog`,
                     link: "profile-edit",
                 },
-                user,
+                data: {
+                    user,
+                }
             },
         });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 
@@ -407,19 +506,31 @@ exports.deleteUserAccount = async (req, res) => {
     const { userId } = req.user;
     const { password } = req.body;
     try {
+        // Pre Checks
         if(!password) throw new Error("Request body must contain {password: 'String'}");
         if(typeof password !== "string" ) throw new Error(`{password} should be a string, cannot be a ${typeof password}`);
+
+        // Finding User
         const user = await User.findByPk(userId);
         if(!user) throw new Error("Unable to find user");
+
+        // Validating User before deleting 
         const checkPassword = await user.authenticateUser(password);
         if(!checkPassword) throw new Error("Invalid Password!");
 
+        // Deleting User account
         await user.destroy();
         res.cookie("authToken", "", {maxAge: 10});
-        return res.status(200).json({message: "User account deleted Successfully"});
+        return res
+                .status(200)
+                .json({
+                        message: "User account deleted Successfully",
+                        data: {},
+                        success: true,
+                    });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({message: error.message});
+        return res.status(400).json({message: error.message, data: {}, success: false});
     }
 }
 

@@ -4,11 +4,11 @@ const {  secrets: { idLength } } = require("../../helper/config");
 const User = require("../user/model");
 const Article = require("../article/model");
 
+// Comments Model inherited from Sequelize Model
 class Comment extends Model {
 
 }
 
-// Comments Model inherited from Sequelize Modal
 Comment.init({
     commentId: {
         type: DataTypes.STRING(40),
@@ -32,7 +32,7 @@ Comment.init({
     modelName: "test_article_comments"
 });
 
-
+// Defining Comments Relationship
 User.hasMany(Comment, {
     foreignKey: {
         name: "userId",
@@ -43,6 +43,16 @@ Article.hasMany(Comment, {
         name: "articleId",
     },
 });
+User.hasMany(Comment, {
+    foreignKey: {
+        name: "userId",
+    },
+});
+Article.hasMany(Comment, {
+    foreignKey: {
+        name: "articleId",
+    }
+})
 Comment.belongsTo(User, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
