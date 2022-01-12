@@ -13,7 +13,7 @@ const commentsRouter = require("./comments");
 const featuresRouter = require("./features");
 
 // Using App Routers
-Router.use(userRouter);
+Router.use("/author", userRouter);
 Router.use(articleRouter);
 Router.use(commentsRouter);
 Router.use(featuresRouter);
@@ -25,6 +25,7 @@ Router.use(featuresRouter);
 
 Router.get("/", indexController.toIndex);
 Router.get("/index", indexController.redirectToIndex);
+
 
 /* ====================== 
     AUTHENTICATED ROUTES

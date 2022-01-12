@@ -13,7 +13,7 @@ const { expireDuration } = require("../../helper/config");
 
 /** 
 * @desc Check if Username already exists
-* @route GET /api/isUsernameUnique/
+* @route GET /author/api/isUsernameUnique/
 * @data username as a string in the body
 * @access Public
 */
@@ -42,7 +42,7 @@ exports.isUsernameUnique = async (req, res) => {
 
 /** 
 * @desc Check if Email already exists
-* @route GET /api/isEmailUnique/
+* @route GET /author/api/isEmailUnique/
 * @data email as a string in the body
 * @access Public
 */
@@ -71,7 +71,7 @@ exports.isEmailUnique = async (req, res) => {
 
 /** 
 * @desc Register a new User
-* @route POST /api/register/
+* @route POST /author/api/register/
 * @data the user details in the req body
 * @access Public
 */
@@ -113,7 +113,7 @@ exports.registerUser = async (req, res) => {
 
 /** 
 * @desc Login a user
-* @route POST /api/login/
+* @route POST /author/api/login/
 * @data the user details in the req body
 * @access Public
 */
@@ -162,7 +162,7 @@ exports.loginUser = async (req, res) => {
 
 /** 
 * @desc Get user details with userId
-* @route GET /api/user/id
+* @route GET /author/api/user/id
 * @data the userId in the req body
 * @access Public 
 */
@@ -187,7 +187,7 @@ exports.getUserById = async (req, res) => {
 
 /** 
 * @desc Get user details with username
-* @route GET /api/user/username
+* @route GET /author/api/username
 * @data the username in the req body
 * @access Public
 */
@@ -250,7 +250,7 @@ exports.toUserProfile = async (req, res) => {
 
 /** 
 * @desc Update User Bio
-* @route PATCH /api/updateBio
+* @route PATCH /author/api/updateBio
 * @data bio in request body
 * @access Private
 */
@@ -271,7 +271,7 @@ exports.updateBio = async (req, res) => {
 
 /** 
 * @desc Update User Links
-* @route PATCH /api/updateLinks
+* @route PATCH /author/api/updateLinks
 * @data links in request body
 * @access Private
 */
@@ -299,7 +299,7 @@ exports.updateLinks = async (req, res) => {
 
 /** 
 * @desc Update User details
-* @route PATCH /api/updateUserDetails
+* @route PATCH /author/api/updateUserDetails
 * @data fullName, username, email in request body
 * @access Private
 */
@@ -344,7 +344,7 @@ exports.updateUserDetails = async (req, res) => {
 
 /** 
 * @desc Update User Password
-* @route PATCH /api/updatePassword
+* @route PATCH /author/api/updatePassword
 * @data old and new password in request body
 * @access Private
 */
@@ -400,7 +400,7 @@ exports.toUserEdit = async (req, res) => {
 
 /** 
 * @desc Delete a User
-* @route DELETE /api/deleteUser
+* @route DELETE /author/api/deleteUser
 * @access Private
 */
 exports.deleteUserAccount = async (req, res) => {
@@ -425,7 +425,7 @@ exports.deleteUserAccount = async (req, res) => {
 
 /** 
 * @desc Logout User and Clear Cookie
-* @route POST /api/logout
+* @route POST /author/api/logout
 * @access Private
 */
 exports.logoutUser = (req, res) => {
