@@ -6,6 +6,7 @@ const turndown = require("turndown");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: { idLength }, tinyMce: { tinyMceApiKey } } = require("../../helper/config");
 const User = require("../user/model");
+const Comment = require("../comments/model")
 
 const htmlToMkd = new turndown({headingStyle: "atx"});
 
@@ -61,38 +62,9 @@ Article.init({
 }, {
     sequelize,
     modelName: "test_articles",
-    hooks: {
-        beforeSave: (article) => {
-
-        }
-    }
 });
 
-
-(async () => {
-    try{
-        const myArticle = await Article.findOne({
-            where: {
-                userId: "qtyQMsJmuvKFyVsX"
-            }
-        })
-        await myArticle.update({body: "# Title\n## Sub title", title: "This is a test article"});    
-        let test = myArticle.convertToHtml()
-        await myArticle.update({body: test});
-        test = myArticle.convertToMarkdown();
-        console.log(test)
-        // console.log(myArticle.toJSON())
-    } catch(error) {
-        console.log(error);
-    }
-})();
-
-// Foreign Relations with other Models
-User.hasMany(Article, {
-    foreignKey: {
-        name: "userId"
-    }
-});
+// Article Relations with other Models
 Article.belongsTo(User, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
@@ -100,6 +72,11 @@ Article.belongsTo(User, {
         name: "userId"
     }
 });
+Article.hasMany(Comment, {
+    foreignKey: {
+        name: "articleId",
+    }
+})
 
 module.exports = Article;
 

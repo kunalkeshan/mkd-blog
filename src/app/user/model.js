@@ -4,6 +4,7 @@ const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const moment = require("moment");
+const Article = require('../article/model');
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: {nanoidLength, saltRounds, jwtSecret}, expireDuration } = require("../../helper/config");
 
@@ -157,6 +158,11 @@ User.init({
         allowNull: false,
         defaultValue: "",
     },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+    },
     registeredAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
@@ -182,6 +188,18 @@ User.init({
         beforeUpdate: (user) => {
             user.convertToString(STRING_IN_DB);
         }
+    },
+});
+
+// User Relationship with Other Models
+User.hasMany(Article, {
+    foreignKey: {
+        name: "userId"
+    }
+});
+User.hasMany(Comment, {
+    foreignKey: {
+        name: "userId",
     },
 });
 

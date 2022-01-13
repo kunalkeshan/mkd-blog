@@ -1,6 +1,8 @@
 "use strict";
 
 const Article = require("./model");
+const {marked} = require("marked");
+const turndown = require("turndown");
 const { renderAppPage } = require("../../helper/middleware/appFunctions");
 
 /* ====================== 
@@ -15,7 +17,7 @@ const { renderAppPage } = require("../../helper/middleware/appFunctions");
 */
 exports.getAllArticles = async (req, res) => {
 
-}
+} 
 
 /* 
 * @desc Get more articles - Limit to about 20
@@ -29,6 +31,14 @@ exports.loadMoreArticles = async (req, res) => {
 
 exports.getArticleById = async (req, res) => {
 
+}
+
+exports.convertToHtml = (req, res) => {
+
+}
+
+exports.convertToMarkdown = (req, res) => {
+    
 }
 
 /* ====================== 
