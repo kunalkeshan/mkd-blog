@@ -1,3 +1,5 @@
+"use strict";
+
 const Router = require("express").Router();
 const authenticate = require("../helper/middleware/auth");
 
@@ -11,9 +13,9 @@ const commentsRouter = require("./comments");
 const featuresRouter = require("./features");
 
 // Using App Routers
-Router.use(userRouter);
-Router.use(articleRouter);
-Router.use(commentsRouter);
+Router.use("/author", userRouter);
+Router.use("/article", articleRouter);
+Router.use("/article/:articleId/comments", commentsRouter);
 Router.use(featuresRouter);
 
 // Implementing the Index Controller
@@ -23,6 +25,7 @@ Router.use(featuresRouter);
 
 Router.get("/", indexController.toIndex);
 Router.get("/index", indexController.redirectToIndex);
+
 
 /* ====================== 
     AUTHENTICATED ROUTES

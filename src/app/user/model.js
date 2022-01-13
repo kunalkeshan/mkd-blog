@@ -1,7 +1,10 @@
+"use strict";
+
 const {nanoid} = require("nanoid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const moment = require("moment");
+const Article = require('../article/model');
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
 const {  secrets: {nanoidLength, saltRounds, jwtSecret}, expireDuration } = require("../../helper/config");
 
@@ -38,7 +41,7 @@ class User extends Model{
         STRING_IN_DB.forEach((string) => {
             for(const prop in user){
                 if(prop === string){
-                    user[prop] = JSON.parse(user[prop])
+                    user[prop] = JSON.parse(user[prop]);
                 }                
             }
         });
@@ -54,7 +57,7 @@ class User extends Model{
     }
 
     // Validate right password
-     async authenticateUser(password = ""){
+    async authenticateUser(password = ""){
         const valid = await bcrypt.compare(password, this.hashedPassword); 
         return valid;
     }
@@ -155,6 +158,11 @@ User.init({
         allowNull: false,
         defaultValue: "",
     },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+    },
     registeredAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
@@ -170,8 +178,6 @@ User.init({
     hooks: {
         beforeSave: async (user) => {
             if(!user.isNewRecord) return;
-            const err = await user.validate()
-            console.log(err, "in before sync")
             user.generateDefaultAvatar();
             user.generateHashedPassword();
             user.convertToString(STRING_IN_DB);
@@ -182,6 +188,18 @@ User.init({
         beforeUpdate: (user) => {
             user.convertToString(STRING_IN_DB);
         }
+    },
+});
+
+// User Relationship with Other Models
+User.hasMany(Article, {
+    foreignKey: {
+        name: "userId"
+    }
+});
+User.hasMany(Comment, {
+    foreignKey: {
+        name: "userId",
     },
 });
 

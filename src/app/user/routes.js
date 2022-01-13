@@ -1,3 +1,5 @@
+"use strict";
+
 const Router = require("express").Router();
 const userController = require("./controller");
 const authenticate = require("../../helper/middleware/auth");
@@ -14,11 +16,11 @@ Router.post("/api/register", userController.registerUser);
 
 Router.post("/api/login", userController.loginUser);
 
-Router.get("/api/user/id", userController.getUserById);
+Router.get("/api/id", userController.getUserById);
 
-Router.get("/api/user/username", userController.getUserByUsername);
+Router.get("/api/username", userController.getUserByUsername);
 
-Router.get("/author/:username", userController.toUserProfile);
+Router.get("/:username", userController.toUserProfile);
 
 /* ====================== 
     AUTHENTICATED ROUTES
@@ -36,7 +38,7 @@ Router.post("/api/logout", authenticate, userController.logoutUser);
 
 Router.delete("/api/deleteUser", authenticate, userController.deleteUserAccount);
 
-Router.get("/author/:username/edit", authenticate, userController.toUserEdit);
+Router.get("/:username/edit", authenticate, userController.toUserEdit);
 
 module.exports = Router;
 

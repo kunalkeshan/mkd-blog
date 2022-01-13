@@ -1,3 +1,5 @@
+"use strict";
+
 // Importing Packages 
 const Sequelize = require("sequelize");
 const { database: db, nodeEnvironment } = require("../config");
@@ -21,7 +23,7 @@ const sequelize = new Sequelize(dbName, user, password, {
 const authenticateConnectionAndSync = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync();
+        await sequelize.sync({});
         console.log(`>>> Connected and Synced to ${dbName} Database!`);
     } catch (error) {
         console.log(`>>> Error Connecting to ${dbName} Database with error: ${error}`);

@@ -1,14 +1,14 @@
 const {nanoid} = require("nanoid");
-const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
-const {  secrets: { idLength } } = require("../../helper/config");
 const User = require("../user/model");
 const Article = require("../article/model");
+const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
+const {  secrets: { idLength } } = require("../../helper/config");
 
+// Comments Model inherited from Sequelize Model
 class Comment extends Model {
 
 }
 
-// Comments Model inherited from Sequelize Modal
 Comment.init({
     commentId: {
         type: DataTypes.STRING(40),
@@ -32,17 +32,7 @@ Comment.init({
     modelName: "test_article_comments"
 });
 
-
-User.hasMany(Comment, {
-    foreignKey: {
-        name: "userId",
-    },
-});
-Article.hasMany(Comment, {
-    foreignKey: {
-        name: "articleId",
-    },
-});
+// Comment Relationship with other Models
 Comment.belongsTo(User, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",

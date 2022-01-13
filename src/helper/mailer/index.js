@@ -1,3 +1,5 @@
+"use strict";
+
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 
