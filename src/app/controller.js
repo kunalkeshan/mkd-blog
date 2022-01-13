@@ -1,6 +1,6 @@
 "use strict";
 
-const { renderAppPage } = require("../helper/middleware/appFunctions");
+const { renderAppPage } = require("../helper/appFunctions");
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS

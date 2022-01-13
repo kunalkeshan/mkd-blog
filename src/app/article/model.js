@@ -4,9 +4,8 @@ const {nanoid} = require("nanoid");
 const {marked} = require("marked");
 const turndown = require("turndown");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
-const {  secrets: { idLength }, tinyMce: { tinyMceApiKey } } = require("../../helper/config");
+const {  secrets: { idLength } } = require("../../helper/config");
 const User = require("../user/model");
-const Comment = require("../comments/model")
 
 const htmlToMkd = new turndown({headingStyle: "atx"});
 
@@ -51,7 +50,7 @@ Article.init({
         allowNull: false,
         defaultValue: "",
     },
-    isPublised: {
+    isPublished: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -61,10 +60,15 @@ Article.init({
     }
 }, {
     sequelize,
-    modelName: "test_articles",
+    modelName: "articles",
 });
 
 // Article Relations with other Models
+User.hasMany(Article, {
+    foreignKey: {
+        name: "userId"
+    }
+});
 Article.belongsTo(User, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
@@ -72,11 +76,7 @@ Article.belongsTo(User, {
         name: "userId"
     }
 });
-Article.hasMany(Comment, {
-    foreignKey: {
-        name: "articleId",
-    }
-})
+
 
 module.exports = Article;
 

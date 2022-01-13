@@ -3,7 +3,7 @@
 const Article = require("./model");
 const {marked} = require("marked");
 const turndown = require("turndown");
-const { renderAppPage } = require("../../helper/middleware/appFunctions");
+const { renderAppPage } = require("../../helper/appFunctions");
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS
