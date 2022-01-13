@@ -22,6 +22,8 @@ Router.get("/api/username", userController.getUserByUsername);
 
 Router.get("/:username", userController.toUserProfile);
 
+Router.get("/verify-:userId", userController.toVerifyUserAccount);
+
 /* ====================== 
     AUTHENTICATED ROUTES
    ====================== */

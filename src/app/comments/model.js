@@ -29,10 +29,21 @@ Comment.init({
     }
 }, {
     sequelize,
-    modelName: "test_article_comments"
+    modelName: "article_comments"
 });
 
 // Comment Relationship with other Models
+User.hasMany(Comment, {
+    foreignKey: {
+        name: "userId",
+    },
+});
+
+Article.hasMany(Comment, {
+    foreignKey: {
+        name: "articleId",
+    }
+})
 Comment.belongsTo(User, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",

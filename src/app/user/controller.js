@@ -2,9 +2,9 @@
 
 const User = require("./model");
 const validator = require("validator");
-const { renderAppPage } = require("../../helper/middleware/appFunctions");
+const { renderAppPage } = require("../../helper/appFunctions");
 const { expireDuration } = require("../../helper/config");
-// const { sendWelcomeEmail } = require("../../helper/mailer"); // Work in progress
+const { sendWelcomeAndVerifyEmail } = require("../../helper/mailer"); // Work in progress
 
 
 /* ====================== 
@@ -111,10 +111,11 @@ exports.registerUser = async (req, res) => {
         const user = newUser.generateSanitizedUser();
 
         // Sending response
-        // sendWelcomeEmail({
-        //     emailTo: user.email,
-        //     fullName: user.fullName,
-        // });
+        sendWelcomeAndVerifyEmail({
+            emailTo: user.email,
+            fullName: user.fullName,
+            userId: user.userId,
+        })
         res.cookie("authToken", token, {httpOnly: true, signed: true, maxAge: expireDuration});
         return res
                 .status(201)
@@ -264,6 +265,36 @@ exports.getUserByUsername = async (req, res) => {
     }
 }
 
+/* 
+* @desc Verify User Account
+* @route GET /author/api/verify-:userId
+* @data the userId in the req params
+* @access Public
+! To be tested
+*/
+exports.verifyAccount = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        // Pre Checks
+        if(!userId) throw new Error("UserId is required in order to verify User!");
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("No Such User found!");
+        await user.update({isVerified: true});
+        return res
+                .status(200)
+                .json({
+                    message: "User Account Verified",
+                    data: {
+                        user: user.toJSON()
+                    },
+                    success: true,
+                })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error.message, data: {}, success: false,});
+    }
+}
+
 /** 
 * @desc Render the user profile with username
 * @route GET /author/:username
@@ -292,6 +323,35 @@ exports.toUserProfile = async (req, res) => {
                 },
             },
         });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error.message, data: {}, success: false});
+    }
+}
+
+/* 
+* @desc Render the Verify User Page
+* @route GET /author/verify-:userId
+* @data the userId in the req params
+* @access Public
+! To be tested
+*/
+exports.toVerifyUserAccount = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        // Pre Checks
+        if(!userId) throw new Error("UserId is required in order to verify User!");
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("No Such User found!");
+        await user.update({isVerified: true});
+        return renderAppPage({
+            res,
+            renderTo: "verify-user",
+            data: {
+                userId
+            },
+            success: true
+        })
     } catch (error) {
         console.log(error);
         return res.status(400).json({message: error.message, data: {}, success: false});
