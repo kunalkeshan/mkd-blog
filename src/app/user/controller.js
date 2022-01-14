@@ -4,7 +4,7 @@ const User = require("./model");
 const validator = require("validator");
 const { renderAppPage } = require("../../helper/appFunctions");
 const { expireDuration } = require("../../helper/config");
-const { sendWelcomeAndVerifyEmail } = require("../../helper/mailer"); // Work in progress
+const { sendWelcomeAndVerifyEmail, sendForgotPasswordEmail } = require("../../helper/mailer"); // Work in progress
 
 
 /* ====================== 
@@ -267,7 +267,7 @@ exports.getUserByUsername = async (req, res) => {
 
 /* 
 * @desc Verify User Account
-* @route GET /author/api/verify-:userId
+* @route PATCH /author/api/verify/:userId
 * @data the userId in the req params
 * @access Public
 ! To be tested
@@ -279,16 +279,71 @@ exports.verifyAccount = async (req, res) => {
         if(!userId) throw new Error("UserId is required in order to verify User!");
         const user = await User.findByPk(userId);
         if(!user) throw new Error("No Such User found!");
-        await user.update({isVerified: true});
+        user.isVerified ? await user.update({isVerified: true}) : "";
+        return res
+                .status(200)
+                .json({
+                    message: "Account Verified Successfully",
+                    data: {
+                        user: user.toJSON(),
+                    },
+                    success: true,
+                })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error.message, data: {}, success: false,});
+    }
+}
+
+/* 
+* @desc Reset User password after forgotten
+* @route PATCH /author/api/forgot-password/:userId
+* @data the userId in the req params and password in the req body
+* @access Public
+! To be tested
+*/
+exports.resetForgotPassword = async (req, res) => {
+    const { userId } = req.params;
+    const { password } = req.body;
+    try {
+        // Pre Checks
+        if(!userId) throw new Error("UserId is required in order to verify User!");
+
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("No Such User found!");
+
+        const checkPassword = await user.authenticateUser(password)
+        if(checkPassword) throw new Error(" Reset Password is the same as old password");
+
+        const updatedUser = await user.updatePasswordAndReturnUser(password);
+        
         return res
                 .status(200)
                 .json({
                     message: "User Account Verified",
                     data: {
-                        user: user.toJSON()
+                        user: updatedUser.toJSON()
                     },
                     success: true,
                 })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error.message, data: {}, success: false,});
+    }
+}
+
+exports.sendResetPasswordMail = (req, res) => {
+    const { username } = req.body;
+    try {
+        if(!username) throw new Error("Request body must contain {username: 'String'}");
+        const user = User.findOne({where: {username}});
+        if(!user) throw new Error("Username is incorrect!");
+        sendForgotPasswordEmail({
+            emailTo: user.email,
+            fullName: user.fullName,
+            userId: user.userId,
+        })
+        res.status(200).json({message: "Reset Password email is sent", data: {}, sucesss: true,})
     } catch (error) {
         console.log(error);
         return res.status(400).json({message: error.message, data: {}, success: false,});
@@ -331,7 +386,7 @@ exports.toUserProfile = async (req, res) => {
 
 /* 
 * @desc Render the Verify User Page
-* @route GET /author/verify-:userId
+* @route GET /author/verify/:userId
 * @data the userId in the req params
 * @access Public
 ! To be tested
@@ -343,14 +398,46 @@ exports.toVerifyUserAccount = async (req, res) => {
         if(!userId) throw new Error("UserId is required in order to verify User!");
         const user = await User.findByPk(userId);
         if(!user) throw new Error("No Such User found!");
-        await user.update({isVerified: true});
+        user.isVerified ? await user.update({isVerified: true}) : "";
         return renderAppPage({
             res,
             renderTo: "verify-user",
-            data: {
-                userId
-            },
-            success: true
+            options: {
+                data: {
+                    user: user.toJSON(),
+                },
+                success: true
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({message: error.message, data: {}, success: false});
+    }
+}
+
+/* 
+* @desc Render the Reset User Password Page
+* @route GET /author/forgot-password/:userId
+* @data the userId in the req params
+* @access Public
+! To be tested
+*/
+exports.toResetForgotPassword = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        // Pre Checks
+        if(!userId) throw new Error("UserId is required in order to verify User!");
+        const user = await User.findByPk(userId);
+        if(!user) throw new Error("No Such User found!");
+        return renderAppPage({
+            res,
+            renderTo: "forgot-password",
+            options: {
+                data: {
+                    user: user.toJSON(),
+                },
+                success: true
+            }
         })
     } catch (error) {
         console.log(error);

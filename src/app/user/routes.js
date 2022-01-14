@@ -20,9 +20,17 @@ Router.get("/api/id", userController.getUserById);
 
 Router.get("/api/username", userController.getUserByUsername);
 
+Router.get("/api/sendResetPasswordMail", userController.sendResetPasswordMail);
+
+Router.patch("/api/forgot-password/:userId", userController.resetForgotPassword);
+
+Router.patch("/api/verify/:userId", userController.verifyAccount);
+
 Router.get("/:username", userController.toUserProfile);
 
-Router.get("/verify-:userId", userController.toVerifyUserAccount);
+Router.get("/verify/:userId", userController.toVerifyUserAccount);
+
+Router.get("/forgot-password/:userId", userController.toResetForgotPassword);
 
 /* ====================== 
     AUTHENTICATED ROUTES

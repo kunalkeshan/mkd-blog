@@ -1,4 +1,4 @@
-const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = ""}) => {
+const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = "", email = ""}) => {
     return `
     <!DOCTYPE html>
 
@@ -391,9 +391,9 @@ const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = ""}) => {
                               <tr>
                                 <td>
                                   <div align="center">
-                                    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${baseUrl}/author/api/verify-:userid" style="height:42px;width:84px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#3AAEE0"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:'Trebuchet MS', Tahoma, sans-serif; font-size:16px"><!
+                                    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${baseUrl}/author/api/verify-${userId}" style="height:42px;width:84px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#3AAEE0"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:'Trebuchet MS', Tahoma, sans-serif; font-size:16px"><!
                                     [endif]--><a
-                                      href="${baseUrl}/author/api/verify-:$}"
+                                      href="${baseUrl}/author/verify/${userId}"
                                       style="
                                         text-decoration: none;
                                         display: inline-block;
@@ -476,7 +476,7 @@ const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = ""}) => {
                                         "
                                       >
                                         <a
-                                          href="${baseUrl}/api/author/verify-:${userId}"
+                                          href="${baseUrl}/author/verify/${userId}" 
                                           rel="noopener"
                                           style="
                                             text-decoration: underline;
@@ -484,7 +484,7 @@ const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = ""}) => {
                                           "
                                           target="_blank"
                                           title="Verify your account!"
-                                          >${baseUrl}/api/author/verify-:${userId}</a
+                                          >${baseUrl}/author/verify/${userId}</a
                                         >
                                       </p>
                                     </div>
@@ -536,7 +536,7 @@ const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = ""}) => {
                                       >
                                         <span style="font-size: 8px"
                                           >If there is any issue, email us at:
-                                          <a rel="noopener noreferrer" target="_blank" href="#">/* Insert Email */</a></span
+                                          <a rel="noopener noreferrer" target="_blank" href="mailto:${email}">${email}</a></span
                                         >
                                       </p>
                                     </div>
