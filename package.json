@@ -19,7 +19,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
-    "marked": "^4.0.8",
+    "marked": "^4.0.10",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
