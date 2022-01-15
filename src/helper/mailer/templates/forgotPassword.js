@@ -1,4 +1,17 @@
+const jwt = require("jsonwebtoken");
+const { secrets: { resetPasswordSecret }, expireDuration } = require("../../config");
+
+/**
+ * @param {string} fullName 
+ * @param {string} userId 
+ * @param {string} baseUrl 
+ * @param {string} email 
+ * @returns {string} Forgot Password HTML Template
+ */
 const forgotPassword = ({fullName = "", userId = "", baseUrl = "", email = ""}) => {
+
+  const token = jwt.sign({userId}, resetPasswordSecret, {expiresIn: expireDuration});
+
     return `
     <!DOCTYPE html>
 
@@ -220,7 +233,7 @@ const forgotPassword = ({fullName = "", userId = "", baseUrl = "", email = ""}) 
                                   role="presentation"
                                   style="
                                     mso-table-lspace: 0pt;
-                                    mso-table-rspace: 0pt;
+                                    mso-table-rspace: 0pt; 
                                     word-break: break-word;
                                   "
                                   width="100%"
@@ -252,7 +265,8 @@ const forgotPassword = ({fullName = "", userId = "", baseUrl = "", email = ""}) 
                                             new password as you've forgotten your
                                             old password. <br />No issues! We've got
                                             you covered up. Click on the button
-                                            below to change your password.
+                                            below to change your password.<br />
+                                            Note: This link will only be valid for a day before you can put another request!
                                           </p>
                                         </div>
                                       </div>
@@ -274,9 +288,9 @@ const forgotPassword = ({fullName = "", userId = "", baseUrl = "", email = ""}) 
                                   <tr>
                                     <td>
                                       <div align="center">
-                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${baseUrl}/forgot-password/${userId}" style="height:42px;width:148px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#3AAEE0"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:'Trebuchet MS', Tahoma, sans-serif; font-size:16px"><!
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${baseUrl}/author/forgot-password/${userId}?auth=${token}" style="height:42px;width:148px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#3AAEE0"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:'Trebuchet MS', Tahoma, sans-serif; font-size:16px"><!
                                         [endif]--><a
-                                          href="${baseUrl}/forgot-password/${userId}"
+                                          href="${baseUrl}/author/forgot-password/${userId}?auth=${token}"
                                           style="
                                             text-decoration: none;
                                             display: inline-block;

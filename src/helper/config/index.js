@@ -31,6 +31,7 @@ module.exports = {
     },
     secrets: {
         jwtSecret: process.env.JWT_SECRET,
+        resetPasswordSecret: process.env.RESET_PASSWORD_SECRET,
         cookieSecret: process.env.COOKIE_SECRET,
         saltRounds: parseInt(process.env.SALT, 10),
         nanoidLength: parseInt(process.env.NANOID_LENGTH, 10),

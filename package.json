@@ -6,7 +6,7 @@
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
-    "start": "echo \">>> Initializing Server\" node app.js",
+    "start": "node app.js",
     "sass": "node-sass -w src/helper/css/sass -o src/helper/css/sass-output",
     "cleanup-css": "postcss src/helper/css/sass-output --use autoprefixer --autoprefixer.browsers \"all\" --dir src/helper/css/sanitized -w",
     "dev": "echo \">>> Starting Local Development Environment\" && nodemon ."

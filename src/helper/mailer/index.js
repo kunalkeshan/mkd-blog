@@ -14,6 +14,13 @@ let mailTransporter = nodemailer.createTransport({
     },
 });
 
+/**
+ * @param {string} from From the Blog 
+ * @param {string} to To whom the email is to be sent
+ * @param {string} subject Subject of the email
+ * @param {string} html Content of the email
+ * @returns Mail Config Object
+ */
 const mailConfigCreator = ({from = "", to = "", subject = "", html = ""}) => {
   return {
     from: from || `Markdown Blog <${email}>`,
@@ -23,6 +30,11 @@ const mailConfigCreator = ({from = "", to = "", subject = "", html = ""}) => {
   }
 }
 
+/**
+ * @description Callback function after sending email
+ * @param {object} error Error object, in case of error while sending mail
+ * @param {object} data Success object
+ */
 const mailTransporterCallback = (error, data) => {
   if (error) {
     console.log(`Error Occurred sending email with error: ${error}`);
@@ -31,6 +43,12 @@ const mailTransporterCallback = (error, data) => {
   }
 }
 
+/**
+ * @description Send Email to Reset Password
+ * @param {string} emailTo To whom the email should be sent 
+ * @param {string} fullName The user's full name 
+ * @param {string} userId userId of the user
+*/
 exports.sendForgotPasswordEmail = ({emailTo = "", fullName = "", userId = ""}) => {
     const mailConfig = mailConfigCreator({
       from: "",
@@ -41,6 +59,12 @@ exports.sendForgotPasswordEmail = ({emailTo = "", fullName = "", userId = ""}) =
     mailTransporter.sendMail(mailConfig, mailTransporterCallback);
 }
 
+/**
+ * @description Send Welcome and prompt User to verify email
+ * @param {string} emailTo To whom the email should be sent 
+ * @param {string} fullName The user's full name 
+ * @param {string} userId userId of the user
+*/
 exports.sendWelcomeAndVerifyEmail = ({emailTo = "", fullName = "", userId = ""}) => {
   const mailConfig = mailConfigCreator({
       from: "", 

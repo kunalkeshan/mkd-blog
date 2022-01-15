@@ -1,3 +1,10 @@
+/**
+ * @param {string} fullName
+ * @param {string} userId
+ * @param {string} baseUrl
+ * @param {string} email
+ * @returns {string} Welcome and Verify HTML Template
+ */
 const welcomeAndVerify = ({fullName = "", userId = "", baseUrl = "", email = ""}) => {
     return `
     <!DOCTYPE html>
