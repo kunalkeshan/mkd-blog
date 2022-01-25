@@ -15,7 +15,7 @@ const featuresRouter = require("./features");
 // Using App Routers
 Router.use("/author", userRouter);
 Router.use("/article", articleRouter);
-Router.use("/article/:articleId/comments", commentsRouter);
+Router.use(commentsRouter);
 Router.use(featuresRouter);
 
 // Implementing the Index Controller
