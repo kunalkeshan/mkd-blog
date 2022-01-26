@@ -3,9 +3,8 @@
 const User = require('./model');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
-const { renderAppPage } = require('../../helper/appFunctions');
 const {
-	expireDuration,
+	oneDayExpireDurationInMs,
 	secrets: { resetPasswordSecret },
 } = require('../../helper/config');
 const {
@@ -19,7 +18,7 @@ const {
 
 /**
  * @description Check if Username already exists
- * @route GET /author/api/isUsernameUnique/
+ * @route GET /api/author/isUsernameUnique/
  * @data username as a string in the body
  * @access Public
  */
@@ -57,7 +56,7 @@ exports.isUsernameUnique = async (req, res) => {
 
 /**
  * @description Check if Email already exists
- * @route GET /author/api/isEmailUnique/
+ * @route GET /api/author/isEmailUnique/
  * @data email as a string in the body
  * @access Public
  */
@@ -93,7 +92,7 @@ exports.isEmailUnique = async (req, res) => {
 
 /**
  * @description Register a new User
- * @route POST /author/api/register/
+ * @route POST /api/author/register/
  * @data the user details in the req body
  * @access Public
  */
@@ -150,15 +149,15 @@ exports.registerUser = async (req, res) => {
 		newUser = newUser.generateSanitizedUser();
 
 		// Sending response
-		sendWelcomeAndVerifyEmail({
-			emailTo: newUser.email,
-			fullName: newUser.fullName,
-			userId: newUser.userId,
-		});
+		// sendWelcomeAndVerifyEmail({
+		// 	emailTo: newUser.email,
+		// 	fullName: newUser.fullName,
+		// 	userId: newUser.userId,
+		// });
 		res.cookie('authToken', token, {
 			httpOnly: true,
 			signed: true,
-			maxAge: expireDuration,
+			maxAge: oneDayExpireDurationInMs,
 		});
 		return res.status(201).json({
 			message: 'Account Registered Successfully!',
@@ -180,7 +179,7 @@ exports.registerUser = async (req, res) => {
 
 /**
  * @description Login a user
- * @route POST /author/api/login/
+ * @route POST /api/author/login/
  * @data the user details in the req body
  * @access Public
  */
@@ -242,7 +241,7 @@ exports.loginUser = async (req, res) => {
 		res.cookie('authToken', token, {
 			httpOnly: true,
 			signed: true,
-			maxAge: expireDuration,
+			maxAge: oneDayExpireDurationInMs,
 		});
 		return res.status(200).json({
 			message: 'Login Successful!',
@@ -261,7 +260,7 @@ exports.loginUser = async (req, res) => {
 
 /**
  * @description Get user details with userId
- * @route GET /author/api/user/id
+ * @route GET /api/author/id
  * @data the userId in the req body
  * @access Public
  */
@@ -299,7 +298,7 @@ exports.getUserById = async (req, res) => {
 
 /**
  * @description Get user details with username
- * @route GET /author/api/username
+ * @route GET /api/author/username
  * @data the username in the req body
  * @access Public
  */
@@ -341,9 +340,10 @@ exports.getUserByUsername = async (req, res) => {
 
 /**
  * @description Verify User Account
- * @route PATCH /author/api/verify/:userId
+ * @route PATCH /api/author/verify/:userId
  * @data the userId in the req params
  * @access Public
+ * * Work in Progress
  */
 exports.verifyAccount = async (req, res) => {
 	const { userId } = req.params;
@@ -373,9 +373,9 @@ exports.verifyAccount = async (req, res) => {
 	}
 };
 
-/*
+/**
  * @description Reset User password after forgotten
- * @route PATCH /author/api/forgot-password/:userId
+ * @route PATCH /api/author/forgot-password/:userId
  * @data the userId in the req params and password in the req body
  * @access Public
  */
@@ -423,7 +423,7 @@ exports.resetForgotPassword = async (req, res) => {
 
 /**
  * @description Send a email to the user to reset their password
- * @route GET /author/api/sendResetPasswordMail
+ * @route GET /api/author/sendResetPasswordMail
  * @data the username in the req body
  * @access Public
  */
@@ -482,20 +482,14 @@ exports.toUserProfile = async (req, res) => {
 		// Check if user is checking their own profile
 		isCurrentUser = isCurrentUser.userId === user.userId;
 		user = user.generateSanitizedUser();
-		return renderAppPage({
-			res,
-			renderTo: 'profile',
-			options: {
-				page: {
-					title: `${username} | Mkd Blog`,
-					link: 'profile',
-				},
-				options: {
-					data: {
-						isCurrentUser,
-						user,
-					},
-				},
+		return res.render('profile', {
+			page: {
+				title: `${username}`,
+				link: 'profile',
+			},
+			data: {
+				isCurrentUser,
+				user,
 			},
 		});
 	} catch (error) {
@@ -525,15 +519,11 @@ exports.toVerifyUserAccount = async (req, res) => {
 		!user.isVerified ? await user.update({ isVerified: true }) : '';
 
 		user = user.generateSanitizedUser();
-		return renderAppPage({
-			res,
-			renderTo: 'verify-user',
-			options: {
-				data: {
-					user,
-				},
-				success: true,
+		return res.render('verify-user', {
+			data: {
+				user,
 			},
+			success: true,
 		});
 	} catch (error) {
 		console.log(error);
@@ -568,15 +558,15 @@ exports.toResetForgotPassword = async (req, res) => {
 		if (!user) throw new Error('No Such User found!');
 
 		user = user.generateSanitizedUser();
-		return renderAppPage({
-			res,
-			renderTo: 'forgot-password',
-			options: {
-				data: {
-					user,
-				},
-				success: true,
+		return res.render('forgot-password', {
+			page: {
+				title: '',
+				link: '',
 			},
+			data: {
+				user,
+			},
+			success: true,
 		});
 	} catch (error) {
 		console.log(error);
@@ -592,7 +582,7 @@ exports.toResetForgotPassword = async (req, res) => {
 
 /**
  * @description Update User Bio
- * @route PATCH /author/api/updateBio
+ * @route PATCH /api/author/updateBio
  * @data bio in request body
  * @access Private
  */
@@ -631,7 +621,7 @@ exports.updateBio = async (req, res) => {
 
 /**
  * @description Update User Links
- * @route PATCH /author/api/updateLinks
+ * @route PATCH /api/author/updateLinks
  * @data links in request body
  * @access Private
  */
@@ -673,7 +663,7 @@ exports.updateLinks = async (req, res) => {
 
 /**
  * @description Update User details
- * @route PATCH /author/api/updateUserDetails
+ * @route PATCH /api/author/updateUserDetails
  * @data fullName, username, email in request body
  * @access Private
  */
@@ -737,7 +727,7 @@ exports.updateUserDetails = async (req, res) => {
 
 /**
  * @description Update User Password
- * @route PATCH /author/api/updatePassword
+ * @route PATCH /api/author/updatePassword
  * @data old and new password in request body
  * @access Private
  */
@@ -796,17 +786,13 @@ exports.toUserEdit = async (req, res) => {
 
 		// Get user details for frontend only
 		user = user.generateSanitizedUser();
-		return renderAppPage({
-			res,
-			renderTo: 'profile-edit',
-			options: {
-				page: {
-					title: `${user.username} | Mkd Blog`,
-					link: 'profile-edit',
-				},
-				data: {
-					user,
-				},
+		return res.render('profile-edit', {
+			page: {
+				title: `${user.username} | Mkd Blog`,
+				link: 'profile-edit',
+			},
+			data: {
+				user,
 			},
 		});
 	} catch (error) {
@@ -819,7 +805,7 @@ exports.toUserEdit = async (req, res) => {
 
 /**
  * @description Delete a User
- * @route DELETE /author/api/deleteUser
+ * @route DELETE /api/author/deleteUser
  * @access Private
  */
 exports.deleteUserAccount = async (req, res) => {
@@ -860,7 +846,7 @@ exports.deleteUserAccount = async (req, res) => {
 
 /**
  * @description Logout User and Clear Cookie
- * @route POST /author/api/logout
+ * @route POST /api/author/logout
  * @access Private
  */
 exports.logoutUser = (req, res) => {

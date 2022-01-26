@@ -16,8 +16,8 @@ const articleController = require('./controller');
     AUTHENTICATED ROUTES
    ====================== */
 
-Router.post('/api/create', authenticate, articleController.createNewArticle);
+Router.post('/api/article/create', authenticate, articleController.createNewArticle);
 
-Router.patch('/api/update-title', authenticate, articleController.updateTitle);
+Router.patch('/api/article/updateTitle', authenticate, articleController.updateTitle);
 
 module.exports = Router;
