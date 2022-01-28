@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.0.16 | MIT License | https://tailwindcss.com
+! tailwindcss v3.0.17 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -556,16 +556,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .font-bold {
   font-weight: 700;
-}
-
-.text-green-900 {
-  --tw-text-opacity: 1;
-  color: rgb(20 83 45 / var(--tw-text-opacity));
-}
-
-.text-red-900 {
-  --tw-text-opacity: 1;
-  color: rgb(127 29 29 / var(--tw-text-opacity));
 }
 
 .duration-500 {
