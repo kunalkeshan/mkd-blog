@@ -13,18 +13,20 @@ const commentsRouter = require("./comments");
 const featuresRouter = require("./features");
 
 // Using App Routers
-Router.use("/author", userRouter);
-Router.use("/article", articleRouter);
-Router.use("/article/:articleId/comments", commentsRouter);
+Router.use(userRouter);
+Router.use(articleRouter);
+Router.use(commentsRouter);
 Router.use(featuresRouter);
 
-// Implementing the Index Controller
 /* ====================== 
     UNAUTHENTICATED ROUTES
    ====================== */
 
-Router.get("/", indexController.toIndex);
 Router.get("/index", indexController.redirectToIndex);
+
+// Page Render Routes
+
+Router.get("/", indexController.toIndex);
 
 
 /* ====================== 

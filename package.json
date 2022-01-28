@@ -1,21 +1,23 @@
 {
   "name": "mkd-blog",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "sass": "node-sass -w src/helper/css/sass -o src/helper/css/sass-output",
-    "cleanup-css": "postcss src/helper/css/sass-output --use autoprefixer --autoprefixer.browsers \"all\" --dir src/helper/css/sanitized -w",
-    "dev": "echo \">>> Starting Local Development Environment\" && nodemon ."
+    "build": "yarn run tailwind",
+    "tailwind-w": "npx tailwindcss -i src/helper/css/index.scss -o public/css/common.css --watch",
+    "tailwind": "npx tailwindcss -i src/helper/css/index.scss -o public/css/common.css",
+    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"npm run tailwind-w\""
   },
   "dependencies": {
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.27.1",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^14.3.2",
     "ejs": "^3.1.6",
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
@@ -33,10 +35,13 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.2",
-    "dotenv": "^10.0.0",
+    "concurrently": "^7.0.0",
     "node-sass": "^7.0.1",
     "nodemon": "^2.0.15",
     "postcss": "^8.4.5",
-    "postcss-cli": "^9.1.0"
+    "postcss-cli": "^9.1.0",
+    "postcss-import": "^14.0.2",
+    "postcss-nested": "^5.0.6",
+    "tailwindcss": "^3.0.17"
   }
 }
