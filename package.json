@@ -10,9 +10,7 @@
     "build": "yarn run sass && yarn run tailwind",
     "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css --watch",
     "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css",
-    "sass": "node-sass -i src/helper/css/sass/index.scss -o src/helper/css/tailwind",
-    "sass-w": "node-sass -i src/helper/css/sass/index.scss -o src/helper/css/tailwind --watch",
-    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run sass-w\" \"yarn run tailwind-w\""
+    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run tailwind-w\""
   },
   "dependencies": {
     "axios": "^0.24.0",
