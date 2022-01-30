@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+	--selection-text: #fff;
+	--selection-bg: #333232;
+}
+
+::selection {
+	color: var(--selection-text);
+	background: var(--selection-bg);
+}
+
+@import './pages/serverError.scss';

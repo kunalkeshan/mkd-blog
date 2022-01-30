@@ -10,7 +10,7 @@ const {
 	secrets: { cookieSecret },
 	nodeEnvironment,
 	appType,
-	isProduction,
+	isProduction
 } = require('./src/helper/config');
 
 // Importing App Router
@@ -49,6 +49,10 @@ app.use((error, req, res, next) => {
 			.json({ message: error.message || 'Internal Server Error!' });
 
 	res.status(error.status || 500).render('serverError', {
+		page: {
+			title: "Markdown Blog",
+			"link": "serverError"
+		},
 		error: {
 			status: error.status || 500,
 			message: error.message || 'Internal Server Error!',

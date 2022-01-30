@@ -1,0 +1,26 @@
+.serverError {
+	@apply flex flex-col items-center justify-center p-2 text-center;
+
+	* {
+		@apply transition-all duration-100 mt-1;
+	}
+
+	.serverError__title {
+		@apply text-xl sm:text-3xl font-bold z-10;
+	}
+
+	.serverError__cta {
+
+        @apply sm:flex sm:flex-row-reverse items-center justify-evenly;
+		.serverError__cta-btn {
+            @apply bg-blue-600 py-1 px-2 rounded text-white shadow-lg shadow-blue-500 hover:shadow-blue-500/50;
+		}
+		.serverError__image {
+			@apply mx-auto sm:mx-0 sm:w-1/2;
+		}
+	}
+
+	.serverError__subtitle {
+        @apply text-xs;
+	}
+}

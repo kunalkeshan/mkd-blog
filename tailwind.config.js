@@ -1,6 +1,6 @@
 module.exports = {
-	darkMode: 'class',
 	content: ['./views/**/*.ejs'],
+	darkMode: 'class',
 	theme: {
 		extend: {},
 	},

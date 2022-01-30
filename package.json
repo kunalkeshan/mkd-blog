@@ -1,6 +1,6 @@
 {
   "name": "mkd-blog",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
@@ -8,9 +8,11 @@
   "scripts": {
     "start": "node app.js",
     "build": "yarn run sass && yarn run tailwind",
-    "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css --watch",
-    "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css",
-    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run tailwind-w\""
+    "sass-w": "node-sass -w src/helper/css/sass/index.scss -o src/helper/css/tailwind",
+    "sass": "node-sass src/helper/css/sass/index.scss -o src/helper/css/tailwind",
+    "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css --watch",
+    "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css",
+    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run sass-w\" \"yarn run tailwind-w\""
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -28,6 +30,7 @@
     "nanoid": "^3.1.31",
     "node-schedule": "^2.1.0",
     "nodemailer": "^6.7.2",
+    "postcss-nesting": "^10.1.2",
     "rebrandly": "^2.0.1",
     "sequelize": "^6.12.5",
     "turndown": "^7.1.1",
