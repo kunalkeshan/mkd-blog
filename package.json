@@ -1,18 +1,16 @@
 {
   "name": "mkd-blog",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "build": "yarn run sass && yarn run tailwind",
-    "sass-w": "node-sass -w src/helper/css/sass/index.scss -o src/helper/css/tailwind",
-    "sass": "node-sass src/helper/css/sass/index.scss -o src/helper/css/tailwind",
+    "build": "yarn run tailwind",
     "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css --watch",
     "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css",
-    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run sass-w\" \"yarn run tailwind-w\""
+    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run tailwind-w\""
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -39,7 +37,6 @@
   "devDependencies": {
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
-    "node-sass": "^7.0.1",
     "nodemon": "^2.0.15",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
