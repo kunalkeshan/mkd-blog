@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title><%= page.title %></title>
-		<%- include ("./headerLinks.ejs") %>
-	</head>
-	<body class="w-full h-screen font-[Nunito]">
-		<nav class="w-full p-2 shadow-md">
-            <div class="flex items-center w-4/5 sm:w-[60%] mx-auto transition-all duration-200">
-                <a href="/" class="w-16 sm:w-24 h-auto transition-all duration-200">
-                    <img
-                        src="/assets/images/mkd-blog-black.png"
-                        alt="Markdown Blog Logo"
-                    />
-                </a>
-            </div>
-		</nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= page.title %></title>
+    <%- include ("./headerLinks.ejs") %>
+  </head>
+  <body class="h-screen w-full font-[Nunito]">
+    <%- include ("../components/skipToMainContent.ejs") %>
+    <nav class="w-full p-2 shadow-md">
+      <div class="mx-auto flex w-4/5 items-center transition-all duration-200 sm:w-[70%] md:w-[60%] ">
+        <a href="/" class="h-auto w-16 transition-all duration-200 sm:w-24">
+          <img
+            src="/assets/images/mkd-blog-black.png"
+            alt="Markdown Blog Logo Black"
+          />
+        </a>
+      </div>
+    </nav>
 

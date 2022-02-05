@@ -1,7 +1,7 @@
 <%- include ("./partials/headerLoggedOut.ejs") %>
-<div class="w-full h-full p-6">
-	<div class="flex items-center flex-col sm:flex-row justify-around w-4/5 sm:w-[60%] mx-auto transition-all duration-200">
-		<img src="/assets/images/404.gif" class="w-96 sm:w-full sm:max-w-[400px] h-auto" alt="There was an error!" />
+<div class="w-full p-6">
+	<div class="flex items-center flex-col md:flex-row justify-around w-4/5 sm:w-[70%] md:w-[60%] mx-auto transition-all duration-200">
+		<img src="/assets/images/404.gif" class="w-96 sm:w-full sm:max-w-[440px] sm:min-w-[340px] h-auto" alt="There was an error!" />
 		<div class="flex flex-col gap-2 justify-center">
 			<h1 class="text-xl font-light"><%= error.message %></h1>
 			<h2 class="text-9xl text-gray-400 font-thin">404</h2>
