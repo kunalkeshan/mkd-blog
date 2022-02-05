@@ -5,7 +5,7 @@ const { marked } = require('marked');
 const turndown = require('turndown');
 
 /* ====================== 
-    UNAUTHENTICATED CONTROLLERS
+	UNAUTHENTICATED CONTROLLERS
    ====================== */
 
 /** 
@@ -14,7 +14,7 @@ const turndown = require('turndown');
 * @access Public
 * ! To be tested
 */
-exports.getAllArticles = async (req, res) => {};
+exports.getAllArticles = async (req, res) => { };
 
 /** 
 * @desc Get more articles - Limit to about 20
@@ -22,16 +22,16 @@ exports.getAllArticles = async (req, res) => {};
 * @access Public
 * ! To be tested
 */
-exports.loadMoreArticles = async (req, res) => {};
+exports.loadMoreArticles = async (req, res) => { };
 
-exports.getArticleById = async (req, res) => {};
+exports.getArticleById = async (req, res) => { };
 
-exports.convertToHtml = (req, res) => {};
+exports.convertToHtml = (req, res) => { };
 
-exports.convertToMarkdown = (req, res) => {};
+exports.convertToMarkdown = (req, res) => { };
 
 /* ====================== 
-    AUTHENTICATED CONTROLLERS
+	AUTHENTICATED CONTROLLERS
    ====================== */
 
 /** 
@@ -82,8 +82,7 @@ exports.updateTitle = async (req, res) => {
 		if (!userId) throw new Error('User should be logged in!');
 		if (!title || !articleId)
 			throw new Error(
-				`Request body should contain {${title ? '' : ' title,'}${
-					articleId ? '' : ' articleId'
+				`Request body should contain {${title ? '' : ' title,'}${articleId ? '' : ' articleId'
 				}}`
 			);
 
@@ -128,8 +127,7 @@ exports.updateBody = async (req, res) => {
 		if (!userId) throw new Error('User should be logged in!');
 		if (!body || !articleId)
 			throw new Error(
-				`Request body should contain {${body ? '' : ' body,'}${
-					articleId ? '' : ' articleId'
+				`Request body should contain {${body ? '' : ' body,'}${articleId ? '' : ' articleId'
 				}}`
 			);
 
@@ -170,4 +168,4 @@ exports.editArticle = async (req, res) => {
 	}
 };
 
-exports.deleteArticle = async (req, res) => {};
+exports.deleteArticle = async (req, res) => { };
