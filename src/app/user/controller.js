@@ -10,7 +10,7 @@ const {
 const {
 	sendWelcomeAndVerifyEmail,
 	sendForgotPasswordEmail,
-} = require('../../helper/mailer'); // Work in progress
+} = require('../../helper/mail'); // Work in progress
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS
@@ -148,7 +148,7 @@ exports.registerUser = async (req, res) => {
 		// Update user before sending
 		newUser = newUser.generateSanitizedUser();
 
-		// Sending response
+		// //Sending response
 		// sendWelcomeAndVerifyEmail({
 		// 	emailTo: newUser.email,
 		// 	fullName: newUser.fullName,
