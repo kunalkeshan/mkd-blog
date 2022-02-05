@@ -1,6 +1,6 @@
 {
   "name": "mkd-blog",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
@@ -10,7 +10,7 @@
     "build": "yarn run tailwind",
     "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css --watch",
     "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/assets/css/common.css",
-    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run tailwind-w\""
+    "dev": "concurrently \"nodemon .\" \"yarn run tailwind-w\""
   },
   "dependencies": {
     "axios": "^0.24.0",
