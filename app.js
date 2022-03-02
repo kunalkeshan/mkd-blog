@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(cookieSecret));
-app.use(logger(nodeEnvironment === 'development' ? 'dev' : 'combined'));
+app.use(logger(isProduction ? 'dev' : 'combined'));
 
 // Using App Router
 app.use('/', appRouter);
@@ -43,8 +43,8 @@ app.use((error, req, res, next) => {
 	console.log(error.stack);
 	return res.status(error.status || 500).render('serverError', {
 		page: {
-			title: 'Markdown Blog',
-			link: 'serverError',
+			title: "Markdown Blog",
+			"link": "serverError"
 		},
 		error: {
 			status: error.status || 500,

@@ -150,7 +150,7 @@ userController.registerUser = async (req, res) => {
 		// Update user before sending
 		newUser = newUser.generateSanitizedUser();
 
-		// Sending response
+		// //Sending response
 		// sendWelcomeAndVerifyEmail({
 		// 	emailTo: newUser.email,
 		// 	fullName: newUser.fullName,
