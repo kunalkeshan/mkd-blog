@@ -1,8 +1,16 @@
+/**
+ * Article Controllers
+ */
+
 'use strict';
 
+// Dependencies
 const Article = require('./model');
 const { marked } = require('marked');
 const turndown = require('turndown');
+
+// Article Controller Container
+const articleController = {};
 
 /* ====================== 
 	UNAUTHENTICATED CONTROLLERS
@@ -14,21 +22,24 @@ const turndown = require('turndown');
 * @access Public
 * ! To be tested
 */
-exports.getAllArticles = async (req, res) => { };
+articleController.getArticles = async (req, res) => {
+	// Collecting Required Data from Request Body
+	const { offset = 0 } = req.body;
+	try {
+		const articles = await Article.findAll({
+			limit: 5,
+			offset,
+		});
+	} catch (error) {
 
-/** 
-* @desc Get more articles - Limit to about 20
-* @route GET /api/article/fetchMore
-* @access Public
-* ! To be tested
-*/
-exports.loadMoreArticles = async (req, res) => { };
+	}
+};
 
-exports.getArticleById = async (req, res) => { };
+articleController.getArticleById = async (req, res) => { };
 
-exports.convertToHtml = (req, res) => { };
+articleController.convertToHtml = (req, res) => { };
 
-exports.convertToMarkdown = (req, res) => { };
+articleController.convertToMarkdown = (req, res) => { };
 
 /* ====================== 
 	AUTHENTICATED CONTROLLERS
@@ -41,7 +52,7 @@ exports.convertToMarkdown = (req, res) => { };
 * @access Private
 * ! To be tested
 */
-exports.createNewArticle = async (req, res) => {
+articleController.createNewArticle = async (req, res) => {
 	const { userId } = req.user;
 	try {
 		// Pre checks
@@ -74,7 +85,7 @@ exports.createNewArticle = async (req, res) => {
 * @access Private
 ! To be Tested
 */
-exports.updateTitle = async (req, res) => {
+articleController.updateTitle = async (req, res) => {
 	const { userId } = req.user;
 	const { title, articleId } = req.body;
 	try {
@@ -119,7 +130,7 @@ exports.updateTitle = async (req, res) => {
 * ! To be Tested
 * ? marked, turndown, and tinymce to be integrated 
 */
-exports.updateBody = async (req, res) => {
+articleController.updateBody = async (req, res) => {
 	const { userId } = req.user;
 	const { body, articleId } = req.body;
 	try {
@@ -156,7 +167,7 @@ exports.updateBody = async (req, res) => {
 * @access <Access Level>
 * ! To be Tested
 */
-exports.editArticle = async (req, res) => {
+articleController.editArticle = async (req, res) => {
 	const { userId } = req.user;
 	const { articleId } = req.body;
 	try {
@@ -168,4 +179,7 @@ exports.editArticle = async (req, res) => {
 	}
 };
 
-exports.deleteArticle = async (req, res) => { };
+articleController.deleteArticle = async (req, res) => { };
+
+// Exporting Article Controller
+module.exports = articleController;

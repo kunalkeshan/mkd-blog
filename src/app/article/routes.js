@@ -1,8 +1,13 @@
+/**
+ * Article Routes
+ */
+
 'use strict';
 
+// Dependencies
 const Router = require('express').Router();
-const authenticate = require('../../helper/middleware/auth');
 const articleController = require('./controller');
+const {authenticate} = require('../../helper/middleware/auth');
 
 /* ====================== 
     UNAUTHENTICATED ROUTES
@@ -10,7 +15,7 @@ const articleController = require('./controller');
 
 // Router.get("/:articleId");
 
-// Router.get("/all");
+Router.get("/", articleController.getArticles);;
 
 /* ====================== 
     AUTHENTICATED ROUTES

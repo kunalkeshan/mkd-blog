@@ -1,5 +1,10 @@
+/**
+ * User Controller
+ */
+
 'use strict';
 
+// Dependencies
 const User = require('./model');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -7,13 +12,12 @@ const {
 	oneDayExpireDurationInMs,
 	secrets: { resetPasswordSecret },
 } = require('../../helper/config');
-const {
-	sendWelcomeAndVerifyEmail,
-	sendForgotPasswordEmail,
-} = require('../../helper/mail'); // Work in progress
+
+// User Controller Container
+const userController = {};
 
 /* ====================== 
-    UNAUTHENTICATED CONTROLLERS
+	UNAUTHENTICATED CONTROLLERS
    ====================== */
 
 /**
@@ -22,7 +26,7 @@ const {
  * @data username as a string in the body
  * @access Public
  */
-exports.isUsernameUnique = async (req, res) => {
+userController.isUsernameUnique = async (req, res) => {
 	const { username } = req.body;
 	try {
 		// Pre checks
@@ -60,7 +64,7 @@ exports.isUsernameUnique = async (req, res) => {
  * @data email as a string in the body
  * @access Public
  */
-exports.isEmailUnique = async (req, res) => {
+userController.isEmailUnique = async (req, res) => {
 	const { email } = req.body;
 	try {
 		// Pre checks
@@ -96,16 +100,14 @@ exports.isEmailUnique = async (req, res) => {
  * @data the user details in the req body
  * @access Public
  */
-exports.registerUser = async (req, res) => {
+userController.registerUser = async (req, res) => {
 	const { email, password, fullName, username } = req.body;
 	try {
 		// Pre checks
 		if (!fullName || !email || !username || !password)
 			throw new Error(
-				`Request Body should contain {${fullName ? '' : ' fullName,'}${
-					username ? '' : ' username,'
-				}${email ? '' : ' email,'}${
-					password ? '' : ' password'
+				`Request Body should contain {${fullName ? '' : ' fullName,'}${username ? '' : ' username,'
+				}${email ? '' : ' email,'}${password ? '' : ' password'
 				}}: 'String'`
 			);
 		if (typeof fullName !== 'string')
@@ -183,7 +185,7 @@ exports.registerUser = async (req, res) => {
  * @data the user details in the req body
  * @access Public
  */
-exports.loginUser = async (req, res) => {
+userController.loginUser = async (req, res) => {
 	const { email = '', username = '', type, password } = req.body;
 	const isEmailLogin = type === 'email';
 	try {
@@ -264,7 +266,7 @@ exports.loginUser = async (req, res) => {
  * @data the userId in the req body
  * @access Public
  */
-exports.getUserById = async (req, res) => {
+userController.getUserById = async (req, res) => {
 	const { userId } = req.body;
 	try {
 		// Pre Checks
@@ -302,7 +304,7 @@ exports.getUserById = async (req, res) => {
  * @data the username in the req body
  * @access Public
  */
-exports.getUserByUsername = async (req, res) => {
+userController.getUserByUsername = async (req, res) => {
 	const { username } = req.body;
 	try {
 		// Pre Checks
@@ -339,138 +341,14 @@ exports.getUserByUsername = async (req, res) => {
 };
 
 /**
- * @description Verify User Account
- * @route PATCH /api/author/verify/:userId
- * @data the userId in the req params
- * @access Public
- * * Work in Progress
- */
-exports.verifyAccount = async (req, res) => {
-	const { userId } = req.params;
-	try {
-		// Pre Checks
-		if (!userId)
-			throw new Error('UserId is required in order to verify User!');
-
-		// Finding User
-		let user = await User.findByPk(userId);
-		if (!user) throw new Error('No Such User found!');
-
-		!user.isVerified ? await user.update({ isVerified: true }) : '';
-		user = user.generateSanitizedUser();
-		return res.status(200).json({
-			message: 'Account Verified Successfully',
-			data: {
-				user,
-			},
-			success: true,
-		});
-	} catch (error) {
-		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
-	}
-};
-
-/**
- * @description Reset User password after forgotten
- * @route PATCH /api/author/forgot-password/:userId
- * @data the userId in the req params and password in the req body
- * @access Public
- */
-exports.resetForgotPassword = async (req, res) => {
-	const { userId } = req.params;
-	const { password } = req.body;
-	try {
-		// Pre Checks
-		if (!userId)
-			throw new Error('UserId is required in order to verify User!');
-		if (!password)
-			throw new Error("Request body must contain {password: 'String'}");
-		if (typeof password !== 'string')
-			throw new Error('{password} must be a string');
-		if (!validator.isStrongPassword(password))
-			throw new Error(
-				'Password is not Strong! minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,'
-			);
-
-		// Finding User
-		const user = await User.findByPk(userId);
-		if (!user) throw new Error('No Such User found!');
-
-		// Checking if Reset Password is same as old password
-		const checkPassword = await user.authenticateUser(password);
-		if (checkPassword)
-			throw new Error(' Reset Password is the same as old password');
-
-		let updatedUser = await user.updatePasswordAndReturnUser(password);
-		updatedUser = updatedUser.generateSanitizedUser();
-		return res.status(200).json({
-			message: 'User Password Updated Successfully',
-			data: {
-				user: updatedUser,
-			},
-			success: true,
-		});
-	} catch (error) {
-		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
-	}
-};
-
-/**
- * @description Send a email to the user to reset their password
- * @route GET /api/author/sendResetPasswordMail
- * @data the username in the req body
- * @access Public
- */
-exports.sendResetPasswordMail = async (req, res) => {
-	const { email } = req.body;
-	try {
-		// Pre Checks
-		if (!email)
-			throw new Error("Request body must contain {email: 'String'}");
-		if (typeof email !== 'string')
-			throw new Error(
-				`{email} must be a string, cannot be ${typeof email}`
-			);
-		if (!validator.isEmail(email)) throw new Error('Not a valid Email');
-
-		// Finding User
-		const user = await User.findOne({ where: { email } });
-		if (!user) throw new Error('Email does not exist!');
-
-		// Sending Email
-		sendForgotPasswordEmail({
-			emailTo: user.email,
-			fullName: user.fullName,
-			userId: user.userId,
-		});
-		return res.status(200).json({
-			message: 'Reset Password email is sent',
-			data: {},
-			success: true,
-		});
-	} catch (error) {
-		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
-	}
-};
-
-/**
  * @description Render the user profile with username
  * @route GET /author/:username
  * @data the username in the req params
  * @access Public
  */
-exports.toUserProfile = async (req, res) => {
+userController.toUserProfile = async (req, res) => {
 	const { username } = req.params;
-	const token = req.cookies.authToken;
+	const token = req.signedCookies.authToken;
 	try {
 		// Pre checks
 		let isCurrentUser = token
@@ -500,84 +378,8 @@ exports.toUserProfile = async (req, res) => {
 	}
 };
 
-/**
- * @description Render the Verify User Page
- * @route GET /author/verify/:userId
- * @data the userId in the req params
- * @access Public
- */
-exports.toVerifyUserAccount = async (req, res) => {
-	const { userId } = req.params;
-	try {
-		// Pre Checks
-		if (!userId)
-			throw new Error('UserId is required in order to verify User!');
-
-		// Finding User
-		let user = await User.findByPk(userId);
-		if (!user) throw new Error('No Such User found!');
-		!user.isVerified ? await user.update({ isVerified: true }) : '';
-
-		user = user.generateSanitizedUser();
-		return res.render('verify-user', {
-			data: {
-				user,
-			},
-			success: true,
-		});
-	} catch (error) {
-		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
-	}
-};
-
-/*
- * @description Render the Reset User Password Page
- * @route GET /author/forgot-password/:userId
- * @data the userId in the req params
- * @access Public
- */
-exports.toResetForgotPassword = async (req, res) => {
-	const { userId } = req.params;
-	const { auth } = req.query;
-	try {
-		// Pre Checks
-		if (!userId)
-			throw new Error('UserId is required in order to verify User!');
-		if (!auth) throw new Error('Invalid Token, Cannot update Password');
-
-		jwt.verify(auth, resetPasswordSecret, (err, decoded) => {
-			if (err) throw new Error('Invalid Token, Cannot update Password');
-			if (decoded.userId !== userId)
-				throw new Error('Invalid Token, Cannot update Password');
-		});
-
-		let user = await User.findByPk(userId);
-		if (!user) throw new Error('No Such User found!');
-
-		user = user.generateSanitizedUser();
-		return res.render('forgot-password', {
-			page: {
-				title: '',
-				link: '',
-			},
-			data: {
-				user,
-			},
-			success: true,
-		});
-	} catch (error) {
-		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
-	}
-};
-
 /* ====================== 
-    AUTHENTICATED CONTROLLERS
+	AUTHENTICATED CONTROLLERS
    ====================== */
 
 /**
@@ -586,7 +388,7 @@ exports.toResetForgotPassword = async (req, res) => {
  * @data bio in request body
  * @access Private
  */
-exports.updateBio = async (req, res) => {
+userController.updateBio = async (req, res) => {
 	const { userId } = req.user;
 	const { bio } = req.body;
 	try {
@@ -625,7 +427,7 @@ exports.updateBio = async (req, res) => {
  * @data links in request body
  * @access Private
  */
-exports.updateLinks = async (req, res) => {
+userController.updateLinks = async (req, res) => {
 	const { userId } = req.user;
 	const { links } = req.body;
 	try {
@@ -667,15 +469,14 @@ exports.updateLinks = async (req, res) => {
  * @data fullName, username, email in request body
  * @access Private
  */
-exports.updateUserDetails = async (req, res) => {
+userController.updateUserDetails = async (req, res) => {
 	const { userId } = req.user;
 	const { fullName, username, email } = req.body;
 	try {
 		// pre checks
 		if (!fullName || !username || !email)
 			throw new Error(
-				`Request body should contain { ${fullName ? '' : 'fullName,'}${
-					username ? '' : ' username,'
+				`Request body should contain { ${fullName ? '' : 'fullName,'}${username ? '' : ' username,'
 				}${email ? '' : ' email'} }`
 			);
 		if (!validator.isEmail(email))
@@ -731,15 +532,14 @@ exports.updateUserDetails = async (req, res) => {
  * @data old and new password in request body
  * @access Private
  */
-exports.updateUserPassword = async (req, res) => {
+userController.updateUserPassword = async (req, res) => {
 	const { userId } = req.user;
 	const { oldPassword, newPassword } = req.body;
 	try {
 		// Pre checks
 		if (!oldPassword || !newPassword)
 			throw new Error(
-				`Request Body should contain {${
-					oldPassword ? '' : ' oldPassword,'
+				`Request Body should contain {${oldPassword ? '' : ' oldPassword,'
 				}${newPassword ? '' : ' newPassword'} }`
 			);
 
@@ -777,7 +577,7 @@ exports.updateUserPassword = async (req, res) => {
  * @route GET /author/:username/edit
  * @access Private
  */
-exports.toUserEdit = async (req, res) => {
+userController.toUserEdit = async (req, res) => {
 	const { userId } = req.user;
 	try {
 		// Find User
@@ -808,7 +608,7 @@ exports.toUserEdit = async (req, res) => {
  * @route DELETE /api/author/deleteUser
  * @access Private
  */
-exports.deleteUserAccount = async (req, res) => {
+userController.deleteUserAccount = async (req, res) => {
 	const { userId } = req.user;
 	const { password } = req.body;
 	try {
@@ -849,10 +649,12 @@ exports.deleteUserAccount = async (req, res) => {
  * @route POST /api/author/logout
  * @access Private
  */
-exports.logoutUser = (req, res) => {
-	if (!req.user) res.status(400).json({ message: 'Unable to Logout.' });
+userController.logoutUser = (req, res) => {
 	return res
 		.status(200)
-		.cookie('authToken', '', { maxAge: 10 })
+		.clearCookie('authToken')
 		.json({ message: 'Logged Out successfully' });
 };
+
+// Exporting User Controller
+module.exports = userController;

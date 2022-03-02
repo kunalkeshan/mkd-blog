@@ -485,12 +485,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: flex;
 }
 
-.h-auto {
-  height: auto;
-}
-
 .h-screen {
   height: 100vh;
+}
+
+.h-auto {
+  height: auto;
 }
 
 .w-full {
@@ -501,6 +501,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 80%;
 }
 
+.w-16 {
+  width: 4rem;
+}
+
 .w-96 {
   width: 24rem;
 }
@@ -509,10 +513,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-}
-
-.w-16 {
-  width: 4rem;
 }
 
 .-translate-x-1\/2 {
@@ -568,16 +568,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
-.p-6 {
-  padding: 1.5rem;
-}
-
 .p-4 {
   padding: 1rem;
 }
 
 .p-2 {
   padding: 0.5rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
 }
 
 .py-1 {
@@ -594,11 +594,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-family: Nunito;
 }
 
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -612,6 +607,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .text-xs {
@@ -652,12 +652,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   transition-duration: 150ms;
 }
 
-.duration-200 {
-  transition-duration: 200ms;
-}
-
 .duration-500 {
   transition-duration: 500ms;
+}
+
+.duration-200 {
+  transition-duration: 200ms;
 }
 
 .hover\:bg-gray-400:hover {
@@ -700,12 +700,12 @@ Ensure the default browser behavior of the `hidden` attribute.
     width: 70%;
   }
 
-  .sm\:w-full {
-    width: 100%;
-  }
-
   .sm\:w-24 {
     width: 6rem;
+  }
+
+  .sm\:w-full {
+    width: 100%;
   }
 
   .sm\:min-w-\[340px\] {

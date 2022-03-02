@@ -1,5 +1,11 @@
+/**
+ * Article Model
+ */
+
 "use strict";
 
+// Dependencies
+const moment = require('moment');
 const {nanoid} = require("nanoid");
 const {marked} = require("marked");
 const turndown = require("turndown");
@@ -28,6 +34,14 @@ class Article extends Model {
         this.body = marked(this.body);
     }
 
+    	// get sanitized user, delete password and date in readable format
+	generateSanitizedArticle() {
+		const article = this.toJSON();
+		article.publishedAt = moment(article.publishedAt).format('MMMM Do YYYY, h:mm:ss a');
+		article.createdAt = moment(article.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+		article.updatedAt = moment(article.updatedAt).format('MMMM Do YYYY, h:mm:ss a');
+		return article;
+	}
 }
 
 Article.init({

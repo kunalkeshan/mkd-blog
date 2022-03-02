@@ -1,8 +1,13 @@
+/**
+ * User Routes
+ */
+
 "use strict";
 
+// Dependencies
 const Router = require("express").Router();
 const userController = require("./controller");
-const authenticate = require("../../helper/middleware/auth");
+const {authenticate} = require("../../helper/middleware/auth");
 
 /* ====================== 
     UNAUTHENTICATED ROUTES
@@ -20,19 +25,9 @@ Router.get("/api/author/id", userController.getUserById);
 
 Router.get("/api/author/username", userController.getUserByUsername);
 
-Router.get("/api/author/sendResetPasswordMail", userController.sendResetPasswordMail);
-
-Router.patch("/api/author/forgot-password/:userId", userController.resetForgotPassword);
-
-Router.patch("/api/author/verify/:userId", userController.verifyAccount);
-
 // Page Render Routes
 
 Router.get("/author/:username", userController.toUserProfile);
-
-Router.get("/author/verify/:userId", userController.toVerifyUserAccount);
-
-Router.get("/author/forgot-password/:userId", userController.toResetForgotPassword);
 
 /* ====================== 
     AUTHENTICATED ROUTES
