@@ -1,19 +1,23 @@
+/**
+ * Index Controllers
+ */
+
 'use strict';
 
 /* ====================== 
     UNAUTHENTICATED CONTROLLERS
    ====================== */
 
-exports.toIndex = (req, res) => {
-	// console.log(`${req.protocol}://${req.hostname}${req.originalUrl}`);
-	const token = req.signedCookies.authToken;
-	if (token) return res.redirect('/home');
+// Index Controller Container
+const indexController = {};
+
+indexController.toIndex = (req, res) => {
 	return res.render('index', {
 		page: { title: 'Markdown Blog', link: 'index' },
 	});
 };
 
-exports.redirectToIndex = (req, res) => {
+indexController.redirectToIndex = (req, res) => {
 	return res.redirect('/');
 };
 
@@ -21,9 +25,12 @@ exports.redirectToIndex = (req, res) => {
     AUTHENTICATED CONTROLLERS
    ====================== */
 
-exports.toHome = (req, res) => {
+indexController.toHome = (req, res) => {
 	// TODO: API Call to get latest posts and send them to views to render
 	return res.render('index', {
 		page: { title: 'Home', link: 'home' },
 	});
 };
+
+// Exporting Index Controller
+module.exports = indexController;

@@ -1,5 +1,10 @@
+/**
+ * User Model
+ */
+
 'use strict';
 
+// Dependencies
 const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -13,8 +18,6 @@ const {
 		nanoidLength,
 		saltRounds,
 		jwtSecret,
-		verifyAccountSecret,
-		resetPasswordSecret,
 	},
 	oneDayExpireDurationInMs,
 } = require('../../helper/config');
@@ -52,12 +55,8 @@ class User extends Model {
 	generateSanitizedUser() {
 		const user = this.toJSON();
 		delete user.hashedPassword;
-		user.lastLogin = moment(user.lastLogin).format(
-			'MMMM Do YYYY, h:mm:ss a'
-		);
-		user.registeredAt = moment(user.registeredAt).format(
-			'MMMM Do YYYY, h:mm:ss a'
-		);
+		user.lastLogin = moment(user.lastLogin).format('MMMM Do YYYY, h:mm:ss a');
+		user.registeredAt = moment(user.registeredAt).format('MMMM Do YYYY, h:mm:ss a');
 		STRING_IN_DB.forEach((string) => {
 			for (const prop in user) {
 				if (prop === string) {
@@ -79,46 +78,6 @@ class User extends Model {
 	async authenticateUser(password = '') {
 		const valid = await bcrypt.compare(password, this.hashedPassword);
 		return valid;
-	}
-
-	// Create a token that allows users to verify their account
-	generateVerifyAccountToken() {
-		const SEVEN_DAYS = oneDayExpireDurationInMs * 7;
-		const token = jwt.sign({ userId: this.userId }, verifyAccountSecret, {
-			expiresIn: SEVEN_DAYS,
-		});
-		return token;
-	}
-
-    /**
-     * @description Authenticates whether the token is valid and is expired or not
-     * @param {string} token jwt token 
-     * @returns {boolean} True/False if token is authenticated
-     */
-	authenticateVerifyAccountToken({ token }) {
-		const decoded = jwt.verify(token, verifyAccountSecret);
-		const isAuthenticated = decoded.userId === this.userId;
-		return isAuthenticated;
-	}
-
-	// Create a token that allows users to reset their password
-	generateResetPasswordToken() {
-		const THREE_DAYS = oneDayExpireDurationInMs * 3;
-		const token = jwt.sign({ userId: this.userId }, resetPasswordSecret, {
-			expiresIn: THREE_DAYS,
-		});
-		return token;
-	}
-
-    /**
-     * @description Authenticates whether the token is valid and is expired or not
-     * @param {string} token jwt token 
-     * @returns {boolean} True/False if token is authenticated
-     */
-	authenticateResetPasswordToken({ token }) {
-		const decoded = jwt.verify(token, resetPasswordSecret);
-		const isAuthenticated = decoded.userId === this.userId;
-		return isAuthenticated;
 	}
 
 	/**
@@ -153,15 +112,12 @@ class User extends Model {
 
 	// Get a user from the auth token
 	static async getUserFromAuthToken(token) {
-		let user = {};
 		try {
-			user = await jwt.verify(token, jwtSecret, async (err, decoded) => {
-				if (err) throw new Error(err.message);
-				const userByPk = await this.findByPk(decoded.userId);
-				if (!user) throw new Error('Unable to find user');
-				return userByPk.toJSON();
-			});
-			return user;
+			const user = jwt.verify(token, jwtSecret);
+			if (!user.userId) throw new Error('Invalid Token!');
+			const userByPk = await this.findByPk(user.userId);
+			if (!user) throw new Error('Unable to find user');
+			return userByPk.toJSON();
 		} catch (error) {
 			console.log(error);
 		}
@@ -216,11 +172,6 @@ User.init(
 			type: DataTypes.STRING,
 			allowNull: false,
 			defaultValue: '',
-		},
-		isVerified: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false,
-			allowNull: false,
 		},
 		registeredAt: {
 			type: DataTypes.DATE,

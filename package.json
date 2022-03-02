@@ -7,17 +7,13 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "build": "yarn run sass && yarn run tailwind",
+    "build": "yarn run tailwind",
     "tailwind-w": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css --watch",
     "tailwind": "npx tailwindcss -i src/helper/css/tailwind/index.css -o public/css/common.css",
-    "sass": "node-sass -i src/helper/css/sass/index.scss -o src/helper/css/tailwind",
-    "sass-w": "node-sass -i src/helper/css/sass/index.scss -o src/helper/css/tailwind --watch",
-    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon .\" \"yarn run sass-w\" \"yarn run tailwind-w\""
+    "dev": "echo \">>> Starting Local Development Environment\" && concurrently \"nodemon app.js\" \"yarn run tailwind-w\""
   },
   "dependencies": {
-    "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.27.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^14.3.2",
     "ejs": "^3.1.6",
@@ -28,9 +24,6 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "nanoid": "^3.1.31",
-    "node-schedule": "^2.1.0",
-    "nodemailer": "^6.7.2",
-    "rebrandly": "^2.0.1",
     "sequelize": "^6.12.5",
     "turndown": "^7.1.1",
     "validator": "^13.7.0"
@@ -38,12 +31,9 @@
   "devDependencies": {
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
-    "node-sass": "^7.0.1",
     "nodemon": "^2.0.15",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
-    "postcss-import": "^14.0.2",
-    "postcss-nested": "^5.0.6",
     "tailwindcss": "^3.0.17"
   }
 }

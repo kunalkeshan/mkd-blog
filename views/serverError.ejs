@@ -1,7 +1,7 @@
 <%- include ("./partials/headerLoggedOut.ejs") %>
 <div class="site-error-container">
 	<h1 class="site-error-container__title"><%= error.message %></h1>
-	<img src="/assets/images/404.gif" class="site-error-container__image" alt="There was an error!" />
+	<img src="/images/404.gif" class="site-error-container__image" alt="There was an error!" />
 	<h2 class="site-error-container__subtitle">
 		<% if (error.status === 404) { %> "<%= error.url %>" does not exist in
 		the server! <% } %>

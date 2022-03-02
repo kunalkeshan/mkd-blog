@@ -11,7 +11,6 @@ const { host, user, password, database: dbName } = db.dbConfig;
 const sequelize = new Sequelize(dbName, user, password, {
 	host,
 	dialect: db.dialect,
-	// operatorsAliases: false,
 	pool: { ...db.pool },
 	logging: (msg) => !isProduction && console.log(msg),
 });
