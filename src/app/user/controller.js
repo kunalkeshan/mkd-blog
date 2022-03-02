@@ -7,7 +7,7 @@
 // Dependencies
 const User = require('./model');
 const validator = require('validator');
-const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize/dist');
 const {
 	oneDayExpireDurationInMs,
 	secrets: { resetPasswordSecret },
@@ -27,15 +27,12 @@ const userController = {};
  * @access Public
  */
 userController.isUsernameUnique = async (req, res) => {
-	const { username } = req.body;
+	let { username } = req.body;
 	try {
 		// Pre checks
+		username = username && typeof username === 'string' ? username : false;
 		if (!username)
 			throw new Error("Request Body should contain {username: 'String'}");
-		if (typeof username !== 'string')
-			throw new Error(
-				`{username} should be a string, cannot be ${typeof username}`
-			);
 		if (username.length < 8 || username.length > 16)
 			throw new Error(
 				'{username} should have a minimum length of 8 characters and maximum of 16 characters'
@@ -65,15 +62,12 @@ userController.isUsernameUnique = async (req, res) => {
  * @access Public
  */
 userController.isEmailUnique = async (req, res) => {
-	const { email } = req.body;
+	let { email } = req.body;
 	try {
 		// Pre checks
+		email = email && typeof email === 'string' ? email : false;
 		if (!email)
 			throw new Error("Request Body should contain {email: 'String'}");
-		if (typeof email !== 'string')
-			throw new Error(
-				`{email} should be a string, cannot be ${typeof email}`
-			);
 		if (!validator.isEmail(email))
 			throw new Error("{email: 'Should be a valid Email'}");
 
@@ -101,30 +95,18 @@ userController.isEmailUnique = async (req, res) => {
  * @access Public
  */
 userController.registerUser = async (req, res) => {
-	const { email, password, fullName, username } = req.body;
+	let { email, password, fullName, username } = req.body;
 	try {
 		// Pre checks
+		email = email && typeof email === 'string' ? email : false;
+		username = username && typeof username === 'string' ? username : false;
+		fullName = fullName && typeof fullName === 'string' ? fullName : false;
+		password = password && typeof password === 'string' ? password : false;
 		if (!fullName || !email || !username || !password)
 			throw new Error(
 				`Request Body should contain {${fullName ? '' : ' fullName,'}${username ? '' : ' username,'
 				}${email ? '' : ' email,'}${password ? '' : ' password'
 				}}: 'String'`
-			);
-		if (typeof fullName !== 'string')
-			throw new Error(
-				`{fullName} should be a string, cannot be a ${typeof fullName}`
-			);
-		if (typeof username !== 'string')
-			throw new Error(
-				`{username} should be a string, cannot be a ${typeof username}`
-			);
-		if (typeof email !== 'string')
-			throw new Error(
-				`{email} should be a string, cannot be a ${typeof email}`
-			);
-		if (typeof password !== 'string')
-			throw new Error(
-				`{password} should be a string, cannot be a ${typeof password}`
 			);
 		if (!validator.isEmail(email))
 			throw new Error("{email: 'Should be a valid Email'}");
@@ -150,12 +132,7 @@ userController.registerUser = async (req, res) => {
 		// Update user before sending
 		newUser = newUser.generateSanitizedUser();
 
-		// //Sending response
-		// sendWelcomeAndVerifyEmail({
-		// 	emailTo: newUser.email,
-		// 	fullName: newUser.fullName,
-		// 	userId: newUser.userId,
-		// });
+		//Sending response
 		res.cookie('authToken', token, {
 			httpOnly: true,
 			signed: true,
@@ -186,46 +163,20 @@ userController.registerUser = async (req, res) => {
  * @access Public
  */
 userController.loginUser = async (req, res) => {
-	const { email = '', username = '', type, password } = req.body;
+	let { email, username, type, password } = req.body;
 	const isEmailLogin = type === 'email';
 	try {
 		// Pre Check
-		if (!email && isEmailLogin) {
-			if (!email)
-				throw new Error(
-					"Request Body should contain {email: 'String'}"
-				);
-		}
-		if (email) {
-			if (typeof email !== 'string')
-				throw new Error(
-					`{email} should be a string, cannot be ${typeof email}`
-				);
-			if (!validator.isEmail(email))
-				throw new Error('Should be a valid email!');
-		}
-		if (!username && !isEmailLogin)
-			throw new Error("Request Body should contain {username: 'String'}");
-		if (username) {
-			if (typeof username !== 'string')
-				throw new Error(
-					`{username} should be a string, cannot be a ${typeof username}`
-				);
-			if (username.length < 8 || username.length > 16)
-				throw new Error(
-					'{username} should have a minimum length of 8 characters and maximum of 16 characters'
-				);
-		}
+		password = password && typeof password === 'string' ? password : false;
 		if (!password)
 			throw new Error("Request Body should contain {password: 'String'}");
-		if (typeof password !== 'string')
-			throw new Error(
-				`{password} should be a string, cannot be a ${typeof password}`
-			);
 
 		// Get User
-		const query = isEmailLogin ? { email } : { username };
-		let user = await User.findOne({ where: query });
+		let user = await User.findOne({
+			where: {
+				[Op.or]: [{ email }, { username }],
+			}
+		});
 		if (!user) throw new Error('No Such User Exists');
 
 		// Authenticate user w password
@@ -267,15 +218,12 @@ userController.loginUser = async (req, res) => {
  * @access Public
  */
 userController.getUserById = async (req, res) => {
-	const { userId } = req.body;
+	let { userId } = req.body;
 	try {
 		// Pre Checks
+		userId = userId && typeof userId === 'string' ? userId : false;
 		if (!userId)
 			throw new Error("Request Body should contain {userId: 'String'}");
-		if (typeof userId !== 'string')
-			throw new Error(
-				`{userId} should be a string, cannot be a ${typeof userId}`
-			);
 
 		// Finding User
 		let userById = await User.findByPk(userId);
@@ -305,15 +253,12 @@ userController.getUserById = async (req, res) => {
  * @access Public
  */
 userController.getUserByUsername = async (req, res) => {
-	const { username } = req.body;
+	let { username } = req.body;
 	try {
 		// Pre Checks
+		username = username && typeof username === 'string' ? username : false;
 		if (!username)
 			throw new Error("Request Body should contain {username: 'String'}");
-		if (typeof username !== 'string')
-			throw new Error(
-				`{username} should be a string, cannot be a ${typeof username}`
-			);
 		if (username.length < 8 || username.length > 16)
 			throw new Error(
 				'{username} should have a minimum length of 8 characters and maximum of 16 characters'
@@ -348,11 +293,11 @@ userController.getUserByUsername = async (req, res) => {
  */
 userController.toUserProfile = async (req, res) => {
 	const { username } = req.params;
-	const token = req.signedCookies.authToken;
+	const { authToken } = req.signedCookies;
 	try {
 		// Pre checks
-		let isCurrentUser = token
-			? await User.getUserFromAuthToken(token)
+		let isCurrentUser = authToken
+			? await User.getUserFromAuthToken(authToken)
 			: false;
 		let user = await User.findOne({ where: { username } });
 		if (!user) throw new Error('No Such User Found');
@@ -390,9 +335,10 @@ userController.toUserProfile = async (req, res) => {
  */
 userController.updateBio = async (req, res) => {
 	const { userId } = req.user;
-	const { bio } = req.body;
+	let { bio } = req.body;
 	try {
 		// Pre Checks
+		bio = bio && typeof bio === 'object' ? bio : false;
 		if (!bio) throw new Error("Request body must contain {bio: 'Object'}");
 		for (const prop in bio) {
 			const userBio = bio[prop];
@@ -429,9 +375,10 @@ userController.updateBio = async (req, res) => {
  */
 userController.updateLinks = async (req, res) => {
 	const { userId } = req.user;
-	const { links } = req.body;
+	let { links } = req.body;
 	try {
 		// Pre Checks
+		links = links && typeof links === 'object' ? links : false;
 		if (!links)
 			throw new Error("Request Body should contain {links: 'Object'}");
 		for (const link in links) {
@@ -471,9 +418,12 @@ userController.updateLinks = async (req, res) => {
  */
 userController.updateUserDetails = async (req, res) => {
 	const { userId } = req.user;
-	const { fullName, username, email } = req.body;
+	let { fullName, username, email } = req.body;
 	try {
 		// pre checks
+		email = email && typeof email === 'string' ? email : false;
+		username = username && typeof username === 'string' ? username : false;
+		fullName = fullName && typeof fullName === 'string' ? fullName : false;
 		if (!fullName || !username || !email)
 			throw new Error(
 				`Request body should contain { ${fullName ? '' : 'fullName,'}${username ? '' : ' username,'
@@ -534,9 +484,11 @@ userController.updateUserDetails = async (req, res) => {
  */
 userController.updateUserPassword = async (req, res) => {
 	const { userId } = req.user;
-	const { oldPassword, newPassword } = req.body;
+	let { oldPassword, newPassword } = req.body;
 	try {
 		// Pre checks
+		oldPassword = oldPassword && typeof oldPassword === 'string' ? oldPassword : false;
+		newPassword = newPassword && typeof newPassword === 'string' ? newPassword : false;
 		if (!oldPassword || !newPassword)
 			throw new Error(
 				`Request Body should contain {${oldPassword ? '' : ' oldPassword,'
@@ -588,7 +540,7 @@ userController.toUserEdit = async (req, res) => {
 		user = user.generateSanitizedUser();
 		return res.render('profile-edit', {
 			page: {
-				title: `${user.username} | Mkd Blog`,
+				title: `${user.username}`,
 				link: 'profile-edit',
 			},
 			data: {
@@ -610,15 +562,12 @@ userController.toUserEdit = async (req, res) => {
  */
 userController.deleteUserAccount = async (req, res) => {
 	const { userId } = req.user;
-	const { password } = req.body;
+	let { password } = req.body;
 	try {
 		// Pre Checks
+		password = password && typeof password === 'string' ? password : false;
 		if (!password)
 			throw new Error("Request body must contain {password: 'String'}");
-		if (typeof password !== 'string')
-			throw new Error(
-				`{password} should be a string, cannot be a ${typeof password}`
-			);
 
 		// Finding User
 		const user = await User.findByPk(userId);
