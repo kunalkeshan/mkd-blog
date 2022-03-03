@@ -5,7 +5,7 @@
 'use strict';
 
 /* ====================== 
-    UNAUTHENTICATED CONTROLLERS
+	UNAUTHENTICATED CONTROLLERS
    ====================== */
 
 // Index Controller Container
@@ -22,11 +22,10 @@ indexController.redirectToIndex = (req, res) => {
 };
 
 /* ====================== 
-    AUTHENTICATED CONTROLLERS
+	AUTHENTICATED CONTROLLERS
    ====================== */
 
-indexController.toHome = (req, res) => {
-	// TODO: API Call to get latest posts and send them to views to render
+indexController.toHome = async (req, res) => {
 	return res.render('index', {
 		page: { title: 'Home', link: 'home' },
 	});

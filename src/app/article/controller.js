@@ -26,20 +26,43 @@ articleController.getArticles = async (req, res) => {
 	// Collecting Required Data from Request Body
 	const { offset = 0 } = req.body;
 	try {
-		const articles = await Article.findAll({
-			limit: 5,
-			offset,
+		const articles = await Article.getArticles({offset});
+		return res.status(200).json({
+			message: 'Articles Fetched', 
+			data: {articles},
+			success: true,
 		});
 	} catch (error) {
-
+		console.log(error);
+		return res.status(400).json({
+			message: error.message, 
+			data: {},
+			success: true,
+		});
 	}
 };
 
-articleController.getArticleById = async (req, res) => { };
+articleController.getArticleById = async (req, res) => {
+	// Collecting Required data from Request Body
+	const { articleId } = req.body;
+};
 
 articleController.convertToHtml = (req, res) => { };
 
 articleController.convertToMarkdown = (req, res) => { };
+
+// Page Routes
+
+articleController.toSingleArticle = async (req, res) => {
+	// Collecting Required Data from Request Params
+	const {articleId} = req.params;
+	try {
+		// Finding Article
+		const article = await Article.findByPk(articleId);
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 /* ====================== 
 	AUTHENTICATED CONTROLLERS
@@ -55,9 +78,6 @@ articleController.convertToMarkdown = (req, res) => { };
 articleController.createNewArticle = async (req, res) => {
 	const { userId } = req.user;
 	try {
-		// Pre checks
-		if (!userId) throw new Error('Log in to Create a Article');
-
 		// Create new Article
 		const newArticle = Article.build({ userId });
 		await newArticle.save();
@@ -87,10 +107,11 @@ articleController.createNewArticle = async (req, res) => {
 */
 articleController.updateTitle = async (req, res) => {
 	const { userId } = req.user;
-	const { title, articleId } = req.body;
+	let { title, articleId } = req.body;
 	try {
 		// Pre checks
-		if (!userId) throw new Error('User should be logged in!');
+		title = title && typeof title === 'string' ? title : false;
+		articleId = articleId && typeof articleId === 'string' ? articleId : false;
 		if (!title || !articleId)
 			throw new Error(
 				`Request body should contain {${title ? '' : ' title,'}${articleId ? '' : ' articleId'

@@ -7,7 +7,7 @@
 // Dependencies
 const Router = require('express').Router();
 const articleController = require('./controller');
-const {authenticate} = require('../../helper/middleware/auth');
+const { authenticate } = require('../../helper/middleware/auth');
 
 /* ====================== 
     UNAUTHENTICATED ROUTES
@@ -15,7 +15,7 @@ const {authenticate} = require('../../helper/middleware/auth');
 
 // Router.get("/:articleId");
 
-Router.get("/", articleController.getArticles);;
+Router.get("/api/article", articleController.getArticles);;
 
 /* ====================== 
     AUTHENTICATED ROUTES

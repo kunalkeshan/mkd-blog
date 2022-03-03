@@ -7,7 +7,7 @@
 // Dependencies
 const User = require('./model');
 const validator = require('validator');
-const { Op } = require('sequelize/dist');
+const { Op } = require('sequelize');
 const {
 	oneDayExpireDurationInMs,
 	secrets: { resetPasswordSecret },
@@ -163,8 +163,7 @@ userController.registerUser = async (req, res) => {
  * @access Public
  */
 userController.loginUser = async (req, res) => {
-	let { email, username, type, password } = req.body;
-	const isEmailLogin = type === 'email';
+	let { email, username, password } = req.body;
 	try {
 		// Pre Check
 		password = password && typeof password === 'string' ? password : false;
@@ -463,7 +462,7 @@ userController.updateUserDetails = async (req, res) => {
 		await user.update(req.body);
 		return res.status(200).json({
 			message: 'User details updated successfully',
-			data: {},
+			data: { details: { fullName, username, email } },
 			success: true,
 		});
 	} catch (error) {

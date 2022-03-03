@@ -8,7 +8,7 @@ const path = require('path');
 const {
 	port,
 	secrets: { cookieSecret },
-	nodeEnvironment,
+	isProduction,
 } = require('./src/helper/config');
 
 // Importing App Router

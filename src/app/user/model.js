@@ -203,4 +203,5 @@ User.init(
 	}
 );
 
+// Exporting User Model
 module.exports = User;

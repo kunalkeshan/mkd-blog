@@ -6,42 +6,51 @@
 
 // Dependencies
 const moment = require('moment');
-const {nanoid} = require("nanoid");
-const {marked} = require("marked");
+const { nanoid } = require("nanoid");
+const { marked } = require("marked");
 const turndown = require("turndown");
 const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
-const {  secrets: { idLength } } = require("../../helper/config");
+const { secrets: { idLength } } = require("../../helper/config");
 const User = require("../user/model");
 
-const htmlToMkd = new turndown({headingStyle: "atx"});
+const htmlToMkd = new turndown({ headingStyle: "atx" });
 
 // Article Model inherited from Sequelize Model
 class Article extends Model {
 
     //Instance Functions
 
-    returnBodyToMarkdown(){
+    returnBodyToMarkdown() {
         const markdown = htmlToMkd.turndown(this.body);
         return markdown;
     }
 
-    returnBodyToHtml(){
+    returnBodyToHtml() {
         const html = marked(this.body);
         return html;
     }
 
-    convertBodyToHTML(){
+    convertBodyToHTML() {
         this.body = marked(this.body);
     }
 
-    	// get sanitized user, delete password and date in readable format
-	generateSanitizedArticle() {
-		const article = this.toJSON();
-		article.publishedAt = moment(article.publishedAt).format('MMMM Do YYYY, h:mm:ss a');
-		article.createdAt = moment(article.createdAt).format('MMMM Do YYYY, h:mm:ss a');
-		article.updatedAt = moment(article.updatedAt).format('MMMM Do YYYY, h:mm:ss a');
-		return article;
-	}
+    // get sanitized user, delete password and date in readable format
+    generateSanitizedArticle() {
+        const article = this.toJSON();
+        article.publishedAt = moment(article.publishedAt).format('MMMM Do YYYY, h:mm:ss a');
+        article.createdAt = moment(article.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+        article.updatedAt = moment(article.updatedAt).format('MMMM Do YYYY, h:mm:ss a');
+        return article;
+    }
+
+    static async getArticles({ offset }) {
+        const articles = await this.findAll({ limit: 5, offset });
+        const sanitized = [];
+        articles.forEach((article) => {
+            sanitized.push(article.generateSanitizedArticle());
+        });
+        return articles;
+    }
 }
 
 Article.init({
@@ -91,7 +100,7 @@ Article.belongsTo(User, {
     }
 });
 
-
+// Exporting Article Model
 module.exports = Article;
 
 
