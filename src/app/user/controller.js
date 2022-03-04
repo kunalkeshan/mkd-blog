@@ -163,7 +163,7 @@ userController.registerUser = async (req, res) => {
  * @access Public
  */
 userController.loginUser = async (req, res) => {
-	let { email, username, password } = req.body;
+	let { email = '', username = '', password } = req.body;
 	try {
 		// Pre Check
 		password = password && typeof password === 'string' ? password : false;

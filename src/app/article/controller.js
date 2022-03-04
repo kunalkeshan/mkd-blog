@@ -18,33 +18,29 @@ const articleController = {};
 
 /** 
 * @desc Get all articles - Limit to about 20
-* @route GET /api/article/fetch/
+* @route GET /api/article/
+* @data {offset, articleId, limit} in Request Query
 * @access Public
-* ! To be tested
 */
 articleController.getArticles = async (req, res) => {
 	// Collecting Required Data from Request Body
-	const { offset = 0 } = req.body;
+	let { offset, articleId, limit } = req.query;
 	try {
-		const articles = await Article.getArticles({offset});
+		articleId = articleId ? articleId : false;
+		const articles = articleId ? await Article.findByPk(articleId) : await Article.getArticles({ offset, limit });
 		return res.status(200).json({
-			message: 'Articles Fetched', 
-			data: {articles},
+			message: 'Articles Fetched',
+			data: { articles },
 			success: true,
 		});
 	} catch (error) {
 		console.log(error);
 		return res.status(400).json({
-			message: error.message, 
+			message: error.message,
 			data: {},
 			success: true,
 		});
 	}
-};
-
-articleController.getArticleById = async (req, res) => {
-	// Collecting Required data from Request Body
-	const { articleId } = req.body;
 };
 
 articleController.convertToHtml = (req, res) => { };
@@ -55,7 +51,7 @@ articleController.convertToMarkdown = (req, res) => { };
 
 articleController.toSingleArticle = async (req, res) => {
 	// Collecting Required Data from Request Params
-	const {articleId} = req.params;
+	const { articleId } = req.params;
 	try {
 		// Finding Article
 		const article = await Article.findByPk(articleId);
@@ -73,7 +69,6 @@ articleController.toSingleArticle = async (req, res) => {
 * @route POST /api/article/create/
 * @data User should be logged in
 * @access Private
-* ! To be tested
 */
 articleController.createNewArticle = async (req, res) => {
 	const { userId } = req.user;
