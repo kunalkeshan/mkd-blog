@@ -5,7 +5,7 @@
 "use strict";
 
 // Dependencies
-const { sequelize, Sequelize: { DataTypes, Model } } = require("../../helper/database");
+const { sequelize, Sequelize: { DataTypes, Model, Op } } = require("../../helper/database");
 const User = require("../user/model");
 const moment = require('moment');
 const { nanoid } = require("nanoid");
@@ -32,10 +32,31 @@ class Article extends Model {
      * @param {object} options Options to get Articles
      * @returns {Promise<array>} Array of Articles
      */
-    static async getArticles({ offset, limit, articleId }) {
+    static async getArticles({ offset, limit, articleId, userId }) {
         offset = offset ? +offset : 0;
         limit = limit ? +limit : 5;
-        const articles = await this.findAll({ where: { articleId }, offset, limit });
+
+        const whereQuery = [];
+        articleId ? whereQuery.push({articleId}) : null;
+        userId ? whereQuery.push({userId}) : null;
+
+        const where = {
+            [Op.or]: whereQuery,
+        }
+        if(!articleId && !userId) delete where[Op.or]
+
+        const articles = await this.findAll({
+            where,
+            include: [
+                {
+                    model: User,
+                    required: false,
+                    attributes: ['userId', 'fullName', 'username', 'image']
+                },
+            ],
+            offset, limit
+        });
+
         const sanitized = [];
         articles.forEach((article) => {
             sanitized.push(article.generateSanitizedArticle());
@@ -71,6 +92,7 @@ Article.init({
     },
     publishedAt: {
         type: DataTypes.DATE,
+        allowNull: true,
     }
 }, {
     sequelize,

@@ -18,14 +18,12 @@ const articleController = {};
 /** 
 * @desc Get all articles - Limit to about 20
 * @route GET /api/article/
-* @data {offset, articleId, limit} in Request Query
+* @data {offset, articleId, limit, userId} in Request Query
 * @access Public
 */
 articleController.getArticles = async (req, res) => {
-	// Collecting Required Data from Request Body
-	const { offset, articleId, limit } = req.query;
 	try {
-		const articles = await Article.getArticles({ offset, limit, articleId });
+		const articles = await Article.getArticles({ ...req.query });
 		return res.status(200).json({
 			message: 'Articles Fetched',
 			data: { articles },
@@ -161,15 +159,13 @@ articleController.updateTitle = async (req, res) => {
 * @desc Update article body
 * @route PATCH /api/article/updateBody
 * @data body and article id in the request body
-* @access Private
-* ! To be Tested
-* ? marked, turndown, and tinymce to be integrated 
+* @access Private 
 */
 articleController.updateBody = async (req, res) => {
-	const { body, articleId } = req.body;
+	let { body, articleId } = req.body;
 	try {
 		// Pre checks
-		if (!userId) throw new Error('User should be logged in!');
+		articleId = articleId && typeof articleId === 'string' ? articleId : false;
 		if (!body || !articleId)
 			throw new Error(
 				`Request body should contain {${body ? '' : ' body,'}${articleId ? '' : ' articleId'
@@ -198,15 +194,39 @@ articleController.updateBody = async (req, res) => {
 };
 
 /**
-* @description <Controller description here>
-* @route METHOD <Route>
-* @data <Data either in body, params, or query>
-* @access <Access Level>
-* ! To be Tested
+* @description Toggles between a article being published or not published
+* @route PATCH /api/article/publish
+* @data {articleId} : 'String' in Request Body
+* @access Author
 */
 articleController.publishArticle = async (req, res) => {
-	const { articleId } = req.body;
+	let { articleId } = req.body;
 	try {
+		// Pre checks
+		articleId = articleId && typeof articleId === 'string' ? articleId : false;
+		if (!articleId) throw new Error('Article Id is Required');
+
+		// Getting article
+		const articleToUpdate = await Article.findByPk(articleId);
+		if (!articleToUpdate) throw new Error('Unable to find article!');
+		const article = articleToUpdate.toJSON();
+
+		// Updating Article Details
+		const details = {
+			isPublished: !article.isPublished,
+		};
+		details.publishedAt = details.isPublished ? Date.now() : null;
+		await articleToUpdate.update({ ...details });
+
+		return res
+			.status(200)
+			.json({
+				message: 'Body updated Successfully',
+				data: {
+					article: articleToUpdate.toJSON(),
+				},
+				success: true,
+			});
 	} catch (error) {
 		console.log(error);
 		return res
@@ -216,16 +236,19 @@ articleController.publishArticle = async (req, res) => {
 };
 
 /**
-* @description <Controller description here>
-* @route METHOD <Route>
-* @data <Data either in body, params, or query>
-* @access <Access Level>
-* ! To be Tested
+* @description Delete a Article
+* @route DELETE /api/article
+* @data {articleId} : 'String' in Request Body
+* @access Author
 */
 articleController.deleteArticle = async (req, res) => {
 	// Collecting Required Data from Request Body
-	const { articleId } = req.body;
+	let { articleId } = req.body;
 	try {
+		// Pre checks
+		articleId = articleId && typeof articleId === 'string' ? articleId : false;
+		if (!articleId) throw new Error('Article Id is Required');
+
 		const deleted = await Article.destroy({ where: { articleId } });
 		if (deleted === 0) throw new Error('Unable to delete Article');
 		return res
