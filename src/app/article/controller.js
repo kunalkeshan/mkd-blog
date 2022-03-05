@@ -18,7 +18,7 @@ const articleController = {};
 /** 
 * @desc Get all articles - Limit to about 20
 * @route GET /api/article/
-* @data {offset, articleId, limit, userId} in Request Query
+* @data {offset, articleId, limit, userId, search} in Request Query
 * @access Public
 */
 articleController.getArticles = async (req, res) => {

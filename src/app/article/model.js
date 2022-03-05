@@ -5,7 +5,7 @@
 "use strict";
 
 // Dependencies
-const { sequelize, Sequelize: { DataTypes, Model, Op } } = require("../../helper/database");
+const { sequelize, Sequelize: { DataTypes, Model, Op, col } } = require("../../helper/database");
 const User = require("../user/model");
 const moment = require('moment');
 const { nanoid } = require("nanoid");
@@ -32,28 +32,40 @@ class Article extends Model {
      * @param {object} options Options to get Articles
      * @returns {Promise<array>} Array of Articles
      */
-    static async getArticles({ offset, limit, articleId, userId }) {
+    static async getArticles({ offset, limit, articleId, userId, search }) {
         offset = offset ? +offset : 0;
         limit = limit ? +limit : 5;
+        search = search ? search : false;
 
         const whereQuery = [];
-        articleId ? whereQuery.push({articleId}) : null;
-        userId ? whereQuery.push({userId}) : null;
+        articleId ? whereQuery.push({ articleId }) : null;
+        userId ? whereQuery.push({ userId }) : null;
 
         const where = {
             [Op.or]: whereQuery,
+        };
+        if (!articleId && !userId) {
+            where[Op.or].shift();
+            where[Op.or].shift();
+        };
+        if (search) {
+            where[Op.or] = [
+                ...where[Op.or],
+                { 'title': { [Op.like]: `%${search}%` } },
+                { 'body': { [Op.like]: `%${search}%` } },
+                { ['$fullName$']: { [Op.like]: `%${search}%` } },
+                { ['$username$']: { [Op.like]: `%${search}%` } },
+            ]
         }
-        if(!articleId && !userId) delete where[Op.or]
+        if (!articleId && !userId && !search) delete where[Op.or]
 
         const articles = await this.findAll({
             where,
-            include: [
-                {
-                    model: User,
-                    required: false,
-                    attributes: ['userId', 'fullName', 'username', 'image']
-                },
-            ],
+            include: {
+                model: User,
+                required: true,
+                attributes: ['userId', 'fullName', 'username', 'image']
+            },
             offset, limit
         });
 

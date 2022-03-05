@@ -12,7 +12,7 @@ const sequelize = new Sequelize(dbName, user, password, {
 	host,
 	dialect: db.dialect,
 	pool: { ...db.pool },
-	logging: (msg) => !isProduction && console.log(msg),
+	logging: !isProduction,
 });
 
 // Authenticating and Syncing Sequelize Connection.
