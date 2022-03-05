@@ -25,7 +25,7 @@ indexController.redirectToIndex = (req, res) => {
 	AUTHENTICATED CONTROLLERS
    ====================== */
 
-indexController.toHome = async (req, res) => {
+indexController.toHome = (req, res) => {
 	return res.render('index', {
 		page: { title: 'Home', link: 'home' },
 	});

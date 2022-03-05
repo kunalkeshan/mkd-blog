@@ -187,7 +187,7 @@ User.init(
 		modelName: 'user_details',
 		timestamps: false,
 		hooks: {
-			beforeSave: async (user) => {
+			beforeSave: (user) => {
 				if (!user.isNewRecord) return;
 				user.generateDefaultAvatar();
 				user.generateHashedPassword();

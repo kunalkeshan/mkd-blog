@@ -23,9 +23,8 @@ const articleController = {};
 */
 articleController.getArticles = async (req, res) => {
 	// Collecting Required Data from Request Body
-	let { offset, articleId, limit } = req.query;
+	const { offset, articleId, limit } = req.query;
 	try {
-		articleId = articleId ? articleId : false;
 		const articles = await Article.getArticles({ offset, limit, articleId });
 		return res.status(200).json({
 			message: 'Articles Fetched',

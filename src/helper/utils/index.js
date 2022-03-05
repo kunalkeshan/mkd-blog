@@ -7,7 +7,6 @@
 // Dependencies
 const { marked } = require('marked');
 const Turndown = require('turndown');
-const { } = require('../config');
 
 const turndown = new Turndown({ headingStyle: 'atx' });
 const htmlToMkd = turndown.turndown;
@@ -25,13 +24,14 @@ appUtilities.parseData = (data) => {
  * @param  {object} options {format: "html" || "markdown"}
  * @returns {string} if format is specified - The converted form of the string - else the given string is returned
  */
-appUtilities.textFormatConvertor = (toConvert = '', { format }) => {
+appUtilities.textFormatConvertor = (toConvert, { format }) => {
 	let converted = toConvert;
 	if (format === 'html') {
 		converted = marked(toConvert, {
 			headerIds: false,
 			gfm: true,
 			breaks: true,
+			xhtml: true,
 		});
 	}
 	if (format === 'markdown') {

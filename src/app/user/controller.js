@@ -8,10 +8,7 @@
 const User = require('./model');
 const validator = require('validator');
 const { Op } = require('sequelize');
-const {
-	oneDayExpireDurationInMs,
-	secrets: { resetPasswordSecret },
-} = require('../../helper/config');
+const { oneDayExpireDurationInMs } = require('../../helper/config');
 
 // User Controller Container
 const userController = {};
@@ -163,7 +160,7 @@ userController.registerUser = async (req, res) => {
  * @access Public
  */
 userController.loginUser = async (req, res) => {
-	let { email = '', username = '', password } = req.body;
+	const { email = '', username = '', password } = req.body;
 	try {
 		// Pre Check
 		password = password && typeof password === 'string' ? password : false;
@@ -436,7 +433,7 @@ userController.updateUserDetails = async (req, res) => {
 			);
 
 		// Check username existence
-		let belongsToUser;
+		let belongsToUser = null;
 		const usernameCheck = await User.findAndCountAll({
 			where: {
 				username,

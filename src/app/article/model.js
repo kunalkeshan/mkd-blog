@@ -27,6 +27,11 @@ class Article extends Model {
         return article;
     }
 
+    /**
+     * @description Get's Articles based on params provided, coverts date and body to display directly
+     * @param {object} options Options to get Articles
+     * @returns {Promise<array>} Array of Articles
+     */
     static async getArticles({ offset, limit, articleId }) {
         offset = offset ? +offset : 0;
         limit = limit ? +limit : 5;

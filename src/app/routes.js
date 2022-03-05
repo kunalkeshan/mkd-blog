@@ -6,7 +6,6 @@
 
 // Dependencies
 const Router = require("express").Router();
-const { authenticate } = require("../helper/middleware/auth");
 
 // Index Controller 
 const indexController = require("./controller");
