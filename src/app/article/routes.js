@@ -21,8 +21,8 @@ Router.get("/api/article", articleController.getArticles);;
     AUTHENTICATED ROUTES
    ====================== */
 
-Router.post('/api/article/create', authenticate, articleController.createNewArticle);
+Router.post('/api/article/', authenticate, articleController.createNewArticle);
 
-Router.patch('/api/article/updateTitle', authenticate, articleController.updateTitle);
+Router.patch('/api/article/title', authenticate, articleController.updateTitle);
 
 module.exports = Router;

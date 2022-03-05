@@ -45,7 +45,7 @@ class Article extends Model {
 
     static async getArticles({ offset, limit }) {
         offset = offset ? +offset : 0;
-		limit = limit ? +limit : 5;
+        limit = limit ? +limit : 5;
         const articles = await this.findAll({ offset, limit });
         const sanitized = [];
         articles.forEach((article) => {

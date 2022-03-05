@@ -95,7 +95,7 @@ articleController.createNewArticle = async (req, res) => {
 
 /** 
 * @desc Update article title
-* @route PATCH /api/article/updateTitle
+* @route PATCH /api/article/title
 * @data title and article id in the request body
 * @access Private
 ! To be Tested
@@ -183,7 +183,7 @@ articleController.updateBody = async (req, res) => {
 * @access <Access Level>
 * ! To be Tested
 */
-articleController.editArticle = async (req, res) => {
+articleController.publishArticle = async (req, res) => {
 	const { userId } = req.user;
 	const { articleId } = req.body;
 	try {
@@ -195,6 +195,13 @@ articleController.editArticle = async (req, res) => {
 	}
 };
 
+/**
+* @description <Controller description here>
+* @route METHOD <Route>
+* @data <Data either in body, params, or query>
+* @access <Access Level>
+* ! To be Tested
+*/
 articleController.deleteArticle = async (req, res) => { };
 
 // Exporting Article Controller
