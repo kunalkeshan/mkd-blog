@@ -7,12 +7,15 @@
 // Dependencies
 const { marked } = require('marked');
 const Turndown = require('turndown');
-const {} = require('../config');
+const { } = require('../config');
 
 const turndown = new Turndown({ headingStyle: 'atx' });
 const htmlToMkd = turndown.turndown;
 
-exports.parseData = (data) => {
+// App Utilities container
+const appUtilities = {};
+
+appUtilities.parseData = (data) => {
 	JSON.parse(JSON.stringify(data));
 };
 
@@ -22,13 +25,20 @@ exports.parseData = (data) => {
  * @param  {object} options {format: "html" || "markdown"}
  * @returns {string} if format is specified - The converted form of the string - else the given string is returned
  */
-exports.textFormatConvertor = (toConvert = '', { format }) => {
+appUtilities.textFormatConvertor = (toConvert = '', { format }) => {
 	let converted = toConvert;
 	if (format === 'html') {
-		converted = marked(toConvert);
+		converted = marked(toConvert, {
+			headerIds: false,
+			gfm: true,
+			breaks: true,
+		});
 	}
 	if (format === 'markdown') {
 		converted = htmlToMkd(toConvert);
 	}
 	return converted;
 };
+
+// Exporting App utilities
+module.exports = appUtilities;

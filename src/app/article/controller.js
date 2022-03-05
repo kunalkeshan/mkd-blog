@@ -6,8 +6,7 @@
 
 // Dependencies
 const Article = require('./model');
-const { marked } = require('marked');
-const turndown = require('turndown');
+const { textFormatConvertor } = require('../../helper/utils');
 
 // Article Controller Container
 const articleController = {};
@@ -27,7 +26,7 @@ articleController.getArticles = async (req, res) => {
 	let { offset, articleId, limit } = req.query;
 	try {
 		articleId = articleId ? articleId : false;
-		const articles = articleId ? await Article.findByPk(articleId) : await Article.getArticles({ offset, limit });
+		const articles = await Article.getArticles({ offset, limit, articleId });
 		return res.status(200).json({
 			message: 'Articles Fetched',
 			data: { articles },
@@ -43,9 +42,31 @@ articleController.getArticles = async (req, res) => {
 	}
 };
 
-articleController.convertToHtml = (req, res) => { };
-
-articleController.convertToMarkdown = (req, res) => { };
+/**
+* @description Convert text to html
+* @route POST /api/article/html
+* @data {text} : 'String' in Request Body
+* @access Public
+*/
+articleController.convertToHtml = (req, res) => {
+	// Collecting Required data from Request Body
+	const { text } = req.body;
+	try {
+		const converted = textFormatConvertor(text, { format: 'html' });
+		return res.status(200).json({
+			message: 'Text Converted to HTML',
+			data: { converted },
+			success: true,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(400).json({
+			message: error.message,
+			data: {},
+			success: true,
+		});
+	}
+};
 
 // Page Routes
 
@@ -101,7 +122,6 @@ articleController.createNewArticle = async (req, res) => {
 ! To be Tested
 */
 articleController.updateTitle = async (req, res) => {
-	const { userId } = req.user;
 	let { title, articleId } = req.body;
 	try {
 		// Pre checks
@@ -147,7 +167,6 @@ articleController.updateTitle = async (req, res) => {
 * ? marked, turndown, and tinymce to be integrated 
 */
 articleController.updateBody = async (req, res) => {
-	const { userId } = req.user;
 	const { body, articleId } = req.body;
 	try {
 		// Pre checks
@@ -168,7 +187,10 @@ articleController.updateBody = async (req, res) => {
 			.status(200)
 			.json({
 				message: 'Body updated Successfully',
-				article: articleToUpdate.toJSON(),
+				data: {
+					article: articleToUpdate.toJSON(),
+				},
+				success: true,
 			});
 	} catch (error) {
 		console.log(error);
@@ -184,7 +206,6 @@ articleController.updateBody = async (req, res) => {
 * ! To be Tested
 */
 articleController.publishArticle = async (req, res) => {
-	const { userId } = req.user;
 	const { articleId } = req.body;
 	try {
 	} catch (error) {
@@ -202,7 +223,26 @@ articleController.publishArticle = async (req, res) => {
 * @access <Access Level>
 * ! To be Tested
 */
-articleController.deleteArticle = async (req, res) => { };
+articleController.deleteArticle = async (req, res) => {
+	// Collecting Required Data from Request Body
+	const { articleId } = req.body;
+	try {
+		const deleted = await Article.destroy({ where: { articleId } });
+		if (deleted === 0) throw new Error('Unable to delete Article');
+		return res
+			.status(200)
+			.json({
+				message: 'Article Deleted Successfully',
+				data: {},
+				success: true
+			});
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(400)
+			.json({ message: error.message, data: {}, success: false });
+	}
+};
 
 // Exporting Article Controller
 module.exports = articleController;

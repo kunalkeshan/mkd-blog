@@ -15,7 +15,9 @@ const { authenticate } = require('../../helper/middleware/auth');
 
 // Router.get("/:articleId");
 
-Router.get("/api/article", articleController.getArticles);;
+Router.get("/api/article", articleController.getArticles);
+
+Router.post('/api/article/html', articleController.convertToHtml);
 
 /* ====================== 
     AUTHENTICATED ROUTES
