@@ -1,10 +1,11 @@
 {
   "name": "mkd-blog",
-  "version": "0.2.3",
+  "version": "0.4.5",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
   "license": "MIT",
+  "repository": "https://github.com/kunalkeshan/mkd-blog",
   "scripts": {
     "start": "node app.js",
     "build": "yarn run tailwind",

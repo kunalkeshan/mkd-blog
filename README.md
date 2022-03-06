@@ -1,22 +1,21 @@
-# mkd-blog Development Documentation
+# mkd-blog
 
-# What is mkd-blog? Aim/Outcome/Intro
+## What is mkd-blog? Aim/Outcome/Intro
 
 ---
 
-mkd-blog short for **Markdown Blog** is a blogging platform where anyone can share their articles they write to the world. The editing platform of the mkd-blog is bidirectional, i.e. raw articles can be written in text and converted into HTML & Markdown, simultaneously, articles written in Markdown is also converted into HTML and Text.
+mkd-blog short for **Markdown Blog** is a blogging platform where anyone can share their articles they write to the world. The editing platform of the mkd-blog is markdown based, users can write their articles in markdown and it is later rendered as html in the output.
 
-Users with or without the knowledge of Markdown can use the platform to create articles and share it in a decorated manner.
+Users with the knowledge of Markdown can use the platform to create articles and share it in a decorated manner.
 
-# mkd-blog Features
+## mkd-blog Features
 
 ---
 
 ## Core Feature
 
 <aside>
-💡 Users can write their articles in plain text or Markdown and can easily share it to the world with a simple link.
-
+💡 Users can write their articles in Markdown and can easily share it to the world with a simple link.
 </aside>
 
 ## Minimum Viable Product (MVP)
@@ -27,10 +26,6 @@ Users with or without the knowledge of Markdown can use the platform to create a
 4. Update Existing Articles. (belonging to that user)
 5. Delete Existing Articles. (belonging to that user)
 6. Read a article in a single page.
-7. Like a article.
-8. Follow a author.
-9. Add Comments to an article.
-10. Display existing articles in the homepage.
 
 ## Additional
 
@@ -44,10 +39,14 @@ Users with or without the knowledge of Markdown can use the platform to create a
 8. Share to Social Media buttons. Copy it to Clipboard.
 9. Highlight text and options to share it on twitter, and other social media along with copy to clipboard option.
 10. Embed Article Option.
+11. Like a article.
+12. Follow a author.
+13. Add Comments to an article.
+14. Display existing articles in the homepage.
 
-# mkd-blog Worked With
+## mkd-blog Worked With
 
----
+<div align="center">
 
 | Role | Name | Contact |
 | --- | --- | --- |
@@ -59,7 +58,9 @@ Users with or without the knowledge of Markdown can use the platform to create a
 | Developer | Udit Gogia | gogiaudit17@gmail.com |
 | Developer | Sai Surya Varun Appala | appalavarun@gmail.com |
 
-# Links To Project
+</div>
+
+## Links To Project
 
 ---
 

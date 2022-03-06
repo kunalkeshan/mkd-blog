@@ -5,10 +5,10 @@
 'use strict';
 
 // Dependencies
-const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
+const { nanoid } = require('../../helper/utils')
 const {
 	sequelize,
 	Sequelize: { DataTypes, Model },
@@ -187,7 +187,7 @@ User.init(
 		modelName: 'user_details',
 		timestamps: false,
 		hooks: {
-			beforeSave: async (user) => {
+			beforeSave: (user) => {
 				if (!user.isNewRecord) return;
 				user.generateDefaultAvatar();
 				user.generateHashedPassword();
@@ -203,4 +203,5 @@ User.init(
 	}
 );
 
+// Exporting User Model
 module.exports = User;
