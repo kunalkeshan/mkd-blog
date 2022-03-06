@@ -1,6 +1,6 @@
 {
   "name": "mkd-blog",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
