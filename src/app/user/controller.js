@@ -314,9 +314,14 @@ userController.toUserProfile = async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
+		return res.render('profile', {
+			page: {
+				title: `Mkd Blog`,
+				link: 'profile',
+			},
+			data: { error },
+			success: false,
+		});
 	}
 };
 
@@ -540,15 +545,19 @@ userController.toUserEdit = async (req, res) => {
 				title: `${user.username}`,
 				link: 'profile-edit',
 			},
-			data: {
-				user,
-			},
+			data: { user },
+			success: true,
 		});
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
+		return res.render('profile-edit', {
+			page: {
+				title: `Mkd Blog`,
+				link: 'profile-edit',
+			},
+			data: {error},
+			success: false,
+		});
 	}
 };
 

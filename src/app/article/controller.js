@@ -113,10 +113,13 @@ articleController.toSingleArticle = async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		return res.status(400).json({
-			message: error.message,
-			data: {},
-			success: true,
+		return res.render("article", {
+			page: {
+				title: `Mkd Blog`,
+				link: 'article',
+			},
+			data: {error},
+			success: false,
 		});
 	}
 }
@@ -332,17 +335,19 @@ articleController.toEditArticle = async (req, res) => {
 				title: `${article.title}`,
 				link: 'article-edit',
 			},
-			data: {
-				article
-			},
+			data: { article },
 			success: true,
 		});
-
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(400)
-			.json({ message: error.message, data: {}, success: false });
+		return res.render("article-edit", {
+			page: {
+				title: `Mkd Blog`,
+				link: 'article-edit',
+			},
+			data: { error },
+			success: false,
+		});
 	}
 }
 

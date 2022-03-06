@@ -1,6 +1,6 @@
-# mkd-blog Development Documentation
+# mkd-blog
 
-# What is mkd-blog? Aim/Outcome/Intro
+## What is mkd-blog? Aim/Outcome/Intro
 
 ---
 
@@ -8,7 +8,7 @@ mkd-blog short for **Markdown Blog** is a blogging platform where anyone can sha
 
 Users with the knowledge of Markdown can use the platform to create articles and share it in a decorated manner.
 
-# mkd-blog Features
+## mkd-blog Features
 
 ---
 
@@ -44,9 +44,9 @@ Users with the knowledge of Markdown can use the platform to create articles and
 13. Add Comments to an article.
 14. Display existing articles in the homepage.
 
-# mkd-blog Worked With
+## mkd-blog Worked With
 
----
+<div align="center">
 
 | Role | Name | Contact |
 | --- | --- | --- |
@@ -58,7 +58,9 @@ Users with the knowledge of Markdown can use the platform to create articles and
 | Developer | Udit Gogia | gogiaudit17@gmail.com |
 | Developer | Sai Surya Varun Appala | appalavarun@gmail.com |
 
-# Links To Project
+</div>
+
+## Links To Project
 
 ---
 
