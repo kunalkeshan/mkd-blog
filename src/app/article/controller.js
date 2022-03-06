@@ -6,6 +6,7 @@
 
 // Dependencies
 const Article = require('./model');
+const Author = require('../user/model');
 const { textFormatConvertor } = require('../../helper/utils');
 
 // Article Controller Container
@@ -18,7 +19,7 @@ const articleController = {};
 /** 
 * @desc Get all articles - Limit to about 20
 * @route GET /api/article/
-* @data {offset, articleId, limit, userId, search} in Request Query
+* @data {offset, articleId, limit, userId} in Request Query
 * @access Public
 */
 articleController.getArticles = async (req, res) => {
@@ -67,14 +68,56 @@ articleController.convertToHtml = (req, res) => {
 
 // Page Routes
 
+/**
+* @description Fetch a single Article
+* @route GET /article/:username/:articleTopic
+* @data {username, articleTopic} in Request Params
+* @access Public
+*/
 articleController.toSingleArticle = async (req, res) => {
 	// Collecting Required Data from Request Params
-	const { articleId } = req.params;
+	const { articleTopic, username } = req.params;
+	const { authToken } = req.signedCookies;
 	try {
+		// Pre checks
+		let isCurrentUser = authToken
+			? await Author.getUserFromAuthToken(authToken)
+			: false;
+		// Finding User
+		const user = await Author.findOne({ where: { username } });
+		if (!user) throw new Error('No such user exists');
+
+		// Check if user is checking their own profile
+		isCurrentUser = isCurrentUser.userId === user.userId;
+
+		const articleTopics = articleTopic.split("-");
+		const articleId = articleTopics[articleTopics.length - 1];
+
 		// Finding Article
-		const article = await Article.findByPk(articleId);
+		let article = await Article.findByPk(articleId);
+		if (!article) throw new Error('Article cannot be found');
+
+		article = article.generateSanitizedArticle();
+
+		// Render Single Article Page
+		return res.render("article", {
+			page: {
+				title: `${article.title}`,
+				link: 'article',
+			},
+			data: {
+				isCurrentUser,
+				article
+			},
+			success: true,
+		});
 	} catch (error) {
 		console.log(error);
+		return res.status(400).json({
+			message: error.message,
+			data: {},
+			success: true,
+		});
 	}
 }
 
@@ -116,7 +159,6 @@ articleController.createNewArticle = async (req, res) => {
 * @route PATCH /api/article/title
 * @data title and article id in the request body
 * @access Private
-! To be Tested
 */
 articleController.updateTitle = async (req, res) => {
 	let { title, articleId } = req.body;
@@ -265,6 +307,44 @@ articleController.deleteArticle = async (req, res) => {
 			.json({ message: error.message, data: {}, success: false });
 	}
 };
+
+// Page Routes
+
+/**
+* @description Render Edit Article Page
+* @route GET /article/:articleId/edit
+* @data {articleId} : 'String' in Request Params
+* @access Author
+*/
+articleController.toEditArticle = async (req, res) => {
+	// Collecting Required information from Request Params
+	const { articleId } = req.params;
+	try {
+		// Finding Article
+		let article = await Article.findByPk(articleId);
+		if (!article) throw new Error('Article does not exist');
+
+		article = article.generateSanitizedArticle();
+
+		// Render Article
+		return res.render("article-edit", {
+			page: {
+				title: `${article.title}`,
+				link: 'article-edit',
+			},
+			data: {
+				article
+			},
+			success: true,
+		});
+
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(400)
+			.json({ message: error.message, data: {}, success: false });
+	}
+}
 
 // Exporting Article Controller
 module.exports = articleController;

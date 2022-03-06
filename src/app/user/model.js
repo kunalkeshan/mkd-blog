@@ -5,10 +5,10 @@
 'use strict';
 
 // Dependencies
-const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
+const { nanoid } = require('../../helper/utils')
 const {
 	sequelize,
 	Sequelize: { DataTypes, Model },

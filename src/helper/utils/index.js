@@ -6,6 +6,7 @@
 
 // Dependencies
 const { marked } = require('marked');
+const { customAlphabet } = require("nanoid/non-secure");
 const Turndown = require('turndown');
 
 const turndown = new Turndown({ headingStyle: 'atx' });
@@ -17,6 +18,12 @@ const appUtilities = {};
 appUtilities.parseData = (data) => {
 	JSON.parse(JSON.stringify(data));
 };
+
+appUtilities.nanoid = (length) => {
+	const ALLOWED_CHARACTERS = "abcdefhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const nanoid = customAlphabet(ALLOWED_CHARACTERS, length);
+	return nanoid();
+}
 
 /**
  * @description If format = html, converts markdown -> "html" || format = markdown, converts html -> "markdown"

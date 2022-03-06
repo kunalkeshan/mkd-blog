@@ -22,6 +22,8 @@ Router.use(articleRouter);
     UNAUTHENTICATED ROUTES
    ====================== */
 
+Router.get('/api/search', indexController.search);
+
 // Page Render Routes
 
 Router.get("/", indexController.toIndex);
@@ -29,6 +31,8 @@ Router.get("/", indexController.toIndex);
 Router.get("/home", indexController.toHome);
 
 Router.get("/index", indexController.redirectToIndex);
+
+Router.get('/search', indexController.toSearch);
 
 /* ====================== 
     AUTHENTICATED ROUTES

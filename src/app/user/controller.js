@@ -310,6 +310,7 @@ userController.toUserProfile = async (req, res) => {
 				isCurrentUser,
 				user,
 			},
+			success: true,
 		});
 	} catch (error) {
 		console.log(error);

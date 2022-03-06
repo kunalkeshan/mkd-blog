@@ -17,9 +17,10 @@ Router.get("/api/article", articleController.getArticles);
 
 Router.post('/api/article/html', articleController.convertToHtml);
 
-// page Routes
+// Page Routes
 
-// Router.get("/:articleId");
+Router.get("/article/:username/:articleTopic", articleController.toSingleArticle);
+
 /* ====================== 
     AUTHENTICATED ROUTES
    ====================== */
@@ -35,5 +36,7 @@ Router.patch('/api/article/publish', authenticate, articleController.publishArti
 Router.delete('/api/article', authenticate, articleController.deleteArticle);
 
 // Page Routes
+
+Router.get('/article/:articleId/edit', authenticate, articleController.toEditArticle);
 
 module.exports = Router;
