@@ -103,7 +103,7 @@ indexController.redirectToIndex = (req, res) => {
 * @access Public
 */
 indexController.toHome = (req, res) => {
-	return res.render('index', {
+	return res.render('home', {
 		page: { title: 'Home', link: 'home' },
 	});
 };
