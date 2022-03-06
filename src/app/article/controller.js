@@ -94,7 +94,12 @@ articleController.toSingleArticle = async (req, res) => {
 		const articleId = articleTopics[articleTopics.length - 1];
 
 		// Finding Article
-		let article = await Article.findByPk(articleId);
+		let article = await Article.findOne({
+			where: {
+				articleId,
+				isPublished: true,
+			}
+		});
 		if (!article) throw new Error('Article cannot be found');
 
 		article = article.generateSanitizedArticle();
