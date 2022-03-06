@@ -1,0 +1,10 @@
+<%- include ("./partials/headerLoggedIn.ejs") %>
+    <script>
+        // Setting Global Variables to Access In JS
+        const article = JSON.parse('<%- JSON.stringify(data.article)%>');
+        const isCurrentUser = ('<%- data.isCurrentUser %>' === true);
+    </script>
+    <div class="w-full p-6">        
+        
+    </div>
+<%- include ("./partials/footer.ejs") %>

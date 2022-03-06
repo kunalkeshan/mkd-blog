@@ -1,1 +1,10 @@
-Profile Page of <%= user.fullName %> 
+<%- include ("./partials/headerLoggedIn.ejs") %>
+    <script>
+        // Setting Global Variables to Access In JS
+        const user = JSON.parse('<%- JSON.stringify(data.user)%>');
+        const isCurrentUser = ('<%- data.isCurrentUser %>' === true);
+    </script>
+    <div class="w-full p-6">        
+        
+    </div>
+<%- include ("./partials/footer.ejs") %>

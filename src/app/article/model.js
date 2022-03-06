@@ -41,6 +41,7 @@ class Article extends Model {
         userId ? whereQuery.push({ userId }) : null;
 
         const where = {
+            isPublished: true,
             [Op.or]: whereQuery,
         };
         if (!articleId && !userId) delete where[Op.or]

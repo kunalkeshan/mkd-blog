@@ -30,6 +30,7 @@ indexController.search = async (req, res) => {
 		// Searching Articles
 		let articles = await Article.findAll({
 			where: {
+				'isPublished': true,
 				[Op.or]: [
 					{ 'title': { [Op.like]: `%${search}%` } },
 					{ 'body': { [Op.like]: `%${search}%` } },
@@ -40,6 +41,7 @@ indexController.search = async (req, res) => {
 		});
 		let users = await User.findAll({
 			where: {
+				['$isPublished$']: true,
 				[Op.or]: [
 					{ 'fullName': { [Op.like]: `%${search}%` } },
 					{ 'username': { [Op.like]: `%${search}%` } },
@@ -50,7 +52,7 @@ indexController.search = async (req, res) => {
 			include: {
 				model: Article,
 				required: true,
-				attributes: ['title', 'body'],
+				attributes: ['title', 'body', 'articleId', 'isPublished', 'publishedAt'],
 			}
 		});
 
