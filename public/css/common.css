@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.0.17 | MIT License | https://tailwindcss.com
+! tailwindcss v3.0.23 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -493,10 +493,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 100vh;
 }
 
-.h-12 {
-  height: 3rem;
-}
-
 .h-8 {
   height: 2rem;
 }
@@ -521,14 +517,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .w-16 {
   width: 4rem;
-}
-
-.w-20 {
-  width: 5rem;
-}
-
-.w-12 {
-  width: 3rem;
 }
 
 .w-8 {
@@ -582,10 +570,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-width: 1px;
 }
 
-.border-none {
-  border-style: none;
-}
-
 .border-gray-400 {
   --tw-border-opacity: 1;
   border-color: rgb(156 163 175 / var(--tw-border-opacity));
@@ -594,10 +578,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-gray-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
-}
-
-.fill-black {
-  fill: #000;
 }
 
 .p-6 {
@@ -670,11 +650,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.outline-none {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
 .outline-1 {
   outline-width: 1px;
 }
@@ -697,26 +672,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   transition-duration: 500ms;
 }
 
-.hover\:h-9:hover {
-  height: 2.25rem;
-}
-
-.hover\:w-9:hover {
-  width: 2.25rem;
-}
-
 .hover\:bg-gray-400:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-black:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
-.hover\:fill-white:hover {
-  fill: #fff;
 }
 
 .hover\:text-white:hover {
@@ -724,21 +682,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.focus\:h-9:focus {
-  height: 2.25rem;
-}
-
-.focus\:w-9:focus {
-  width: 2.25rem;
-}
-
 .focus\:-translate-y-0:focus {
   --tw-translate-y: -0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.focus\:border-none:focus {
-  border-style: none;
 }
 
 .focus\:bg-gray-400:focus {
@@ -751,11 +697,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.focus\:outline-none:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
 .focus\:outline:focus {
   outline-style: solid;
 }
@@ -764,22 +705,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
-}
-
-.active\:h-9:active {
-  height: 2.25rem;
-}
-
-.active\:h-6:active {
-  height: 1.5rem;
-}
-
-.active\:w-9:active {
-  width: 2.25rem;
-}
-
-.active\:w-6:active {
-  width: 1.5rem;
 }
 
 @media (min-width: 640px) {
