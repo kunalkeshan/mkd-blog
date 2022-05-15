@@ -7,7 +7,7 @@
 // Dependencies
 const jwt = require("jsonwebtoken");
 const User = require("../../app/user/model");
-const {  secrets: { jwtSecret } } = require("../config");
+const { secrets: { jwtSecret } } = require("../config");
 
 // Authenticate Middleware Container
 const authenticate = {};
@@ -18,11 +18,11 @@ const authenticate = {};
 authenticate.authenticate = (req, res, next) => {
     try {
         const token = req.signedCookies.authToken;
-        if(!token) throw new Error("No Auth Token");
+        if (!token) throw new Error("No Auth Token");
         jwt.verify(token, jwtSecret, async (err, decoded) => {
-            if(err) throw err;
+            if (err) throw err;
             const user = await User.findByPk(decoded.userId);
-            if(!user) throw new Error("Unable to find user.");
+            if (!user) throw new Error("Unable to find user.");
             req.token = token;
             req.user = user.toJSON();
             return next();
@@ -32,6 +32,19 @@ authenticate.authenticate = (req, res, next) => {
         return res.status(401).clearCookie("authToken").redirect("/");
     }
 };
+
+authenticate.checkJwt = (req, res, next) => {
+    const token = req.signedCookies.authToken;
+    if (!token) return next();
+    jwt.verify(token, jwtSecret, async (err, decoded) => {
+        if (err) return next();
+        const user = await User.findByPk(decoded.userId);
+        if (!user) throw new Error("Unable to find user.");
+        req.token = token;
+        req.user = user.toJSON();
+        return next();
+    });
+}
 
 // Exporting Auth Middleware
 module.exports = authenticate;

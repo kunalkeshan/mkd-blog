@@ -6,6 +6,7 @@
 
 // Dependencies
 const Router = require("express").Router();
+const { checkJwt } = require('../helper/middleware/auth')
 
 // Index Controller 
 const indexController = require("./controller");
@@ -26,9 +27,11 @@ Router.use(articleRouter);
 
 Router.get("/", indexController.toIndex);
 
-Router.get("/home", indexController.toHome);
+Router.get("/home", checkJwt, indexController.toHome);
 
-Router.get("/index", indexController.redirectToIndex);
+Router.get("/index", checkJwt, indexController.redirectToIndex);
+
+Router.get("/auth", indexController.toAuth);
 
 /* ====================== 
     AUTHENTICATED ROUTES

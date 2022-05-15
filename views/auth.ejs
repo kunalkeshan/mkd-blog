@@ -1,0 +1,16 @@
+<%- include ("./partials/header.ejs") %>
+    <main class="w-full h-full p-6 sm:pt-20 lg:pt-32">
+        <div class="w-4/5 sm:w-[70%] md:w-[60%] mx-auto transition-all duration-200 h-full flex flex-col items-center justify-center gap-4" id="main-content">
+            <form id="login-form">
+                <label for="user">
+                    <input type="text" placeholder="username or email" name="user" id="user" />
+                </label>
+                <label for="password">
+                    <input type="text" name="password" id="password" placeholder="password" />
+                </label>
+                <button type="submit">Login</button>
+            </form>
+            <form id="register-form"></form>
+        </div>
+    </main>
+<%- include ("./partials/footer.ejs") %>

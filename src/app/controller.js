@@ -25,9 +25,17 @@ indexController.redirectToIndex = (req, res) => {
 	AUTHENTICATED CONTROLLERS
    ====================== */
 
+// Semi authenticated, user check will be done in the route
+indexController.toAuth = (req, res) => {
+	return res.render('auth', {
+		page: { title: 'Auth | mkd-blog', link: 'auth', user: req?.user },
+	})
+}
+
+// Semi authenticated, user check will be done in the route
 indexController.toHome = (req, res) => {
 	return res.render('index', {
-		page: { title: 'Home', link: 'home' },
+		page: { title: 'Home | mkd-blog', link: 'home', user: req?.user },
 	});
 };
 

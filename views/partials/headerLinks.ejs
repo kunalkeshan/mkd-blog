@@ -9,5 +9,10 @@
 <!-- Tailwind Output File -->
 <link rel="stylesheet" href="/css/common.css" />
 
+<!-- Tailwind CSS To work in development -->
+<% if (process.env.NODE_ENV === 'development') { %>
+	<script src="https://cdn.tailwindcss.com"></script>
+<% } %>
+
 <!-- Validator JS -->
 <!-- https://cdnjs.cloudflare.com/ajax/libs/validator/13.7.0/validator.min.js -->

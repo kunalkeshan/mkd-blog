@@ -4,6 +4,7 @@
   "description": "Markdown Blog. Converts Markdown to Articles!",
   "main": "app.js",
   "author": "Kunal Keshan, Think-Digital 2021",
+  "private": true,
   "license": "MIT",
   "repository": "https://github.com/kunalkeshan/mkd-blog",
   "scripts": {

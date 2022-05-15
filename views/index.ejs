@@ -1,3 +1,23 @@
-<%- include ("./partials/headerLoggedOut.ejs") %>
-
+<%- include ("./partials/header.ejs") %>
+    <main class="w-full h-full p-6 sm:pt-20 lg:pt-32">
+        <div class="w-4/5 sm:w-[70%] md:w-[60%] mx-auto transition-all duration-200 h-full flex flex-col items-center justify-center gap-4">
+            <% [
+                "A professional writer is an amateur who didn’t quit.",
+                "If you want to be a writer, you must do two things above all others: read a lot and write a lot.",
+                "The best way to predict the future is to invent it.",
+                "There is no greater agony than bearing an untold story inside you.",
+            ].forEach((element, index) => { %>
+                <section class="flex shadow-lg rounded px-4 py-2 w-full sm:h-20">
+                    <h1 class="text-md sm:text-xl font-light sm:text-center w-full">"<%=element%>"</h1>
+                </section>
+                <% if(index === 1) {%>
+                    <section class="w-full flex items-center justify-center my-2 animate-bounce">
+                        <a href="/auth" class="border border-gray-400 w-fit py-1 px-2 rounded hover:bg-gray-400 hover:text-white focus:bg-gray-400 focus:text-white transition-all duration-200 uppercase" id="main-content">Get Started!</a>
+                    </section>
+                <% }%>
+            <% }) %>
+        </div>
+    </main>
 <%- include ("./partials/footer.ejs") %>
+
+
