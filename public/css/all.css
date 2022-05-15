@@ -1,0 +1,37 @@
+/* Global Styling */
+
+.animate-fade {
+	animation: fade 500ms ease-in-out 100ms forwards;
+	opacity: 0;
+	transform: translateY(-1rem);
+}
+
+.animate-fade-reverse {
+    animation: fade-reverse 500ms ease-in-out 100ms forwards;
+    opacity: 0;
+    transform: translateY(1rem);
+}
+
+/* Global Animations */
+
+@keyframes fade {
+	0% {
+		opacity: 0;
+		transform: translateY(-1rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fade-reverse {
+    0% {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

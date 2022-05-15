@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.0.17 | MIT License | https://tailwindcss.com
+! tailwindcss v3.0.23 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -526,12 +526,17 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 100vh;
 }
 
+<<<<<<< HEAD
 .h-full {
   height: 100%;
 }
 
 .h-40 {
   height: 10rem;
+=======
+.h-8 {
+  height: 2rem;
+>>>>>>> 59a5c66266e184c5cc116dea4e14f1ccbb1932aa
 }
 
 .w-full {
@@ -556,6 +561,7 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 4rem;
 }
 
+<<<<<<< HEAD
 .w-1\/3 {
   width: 33.333333%;
 }
@@ -582,6 +588,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .grow-\[0\.3\] {
   flex-grow: 0.3;
+=======
+.w-8 {
+  width: 2rem;
+>>>>>>> 59a5c66266e184c5cc116dea4e14f1ccbb1932aa
 }
 
 .-translate-x-1\/2 {
@@ -654,6 +664,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .justify-center {
   justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
 }
 
 .justify-around {

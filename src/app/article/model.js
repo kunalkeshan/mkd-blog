@@ -8,8 +8,7 @@
 const { sequelize, Sequelize: { DataTypes, Model, Op, col } } = require("../../helper/database");
 const User = require("../user/model");
 const moment = require('moment');
-const { nanoid } = require("nanoid");
-const { textFormatConvertor } = require('../../helper/utils')
+const { textFormatConvertor, nanoid } = require('../../helper/utils')
 const { secrets: { idLength } } = require("../../helper/config");
 
 // Article Model inherited from Sequelize Model
@@ -32,7 +31,7 @@ class Article extends Model {
      * @param {object} options Options to get Articles
      * @returns {Promise<array>} Array of Articles
      */
-    static async getArticles({ offset, limit, articleId, userId, search }) {
+    static async getArticles({ offset, limit, articleId, userId }) {
         offset = offset ? +offset : 0;
         limit = limit ? +limit : 5;
         search = search ? search : false;
@@ -42,30 +41,13 @@ class Article extends Model {
         userId ? whereQuery.push({ userId }) : null;
 
         const where = {
+            isPublished: true,
             [Op.or]: whereQuery,
         };
-        if (!articleId && !userId) {
-            where[Op.or].shift();
-            where[Op.or].shift();
-        };
-        if (search) {
-            where[Op.or] = [
-                ...where[Op.or],
-                { 'title': { [Op.like]: `%${search}%` } },
-                { 'body': { [Op.like]: `%${search}%` } },
-                { ['$fullName$']: { [Op.like]: `%${search}%` } },
-                { ['$username$']: { [Op.like]: `%${search}%` } },
-            ]
-        }
-        if (!articleId && !userId && !search) delete where[Op.or]
+        if (!articleId && !userId) delete where[Op.or]
 
         const articles = await this.findAll({
             where,
-            include: {
-                model: User,
-                required: true,
-                attributes: ['userId', 'fullName', 'username', 'image']
-            },
             offset, limit
         });
 
@@ -109,6 +91,15 @@ Article.init({
 }, {
     sequelize,
     modelName: "articles",
+    hooks: {
+        beforeFind: (query) => {
+            query.include = {
+                model: User,
+                required: true,
+                attributes: ['userId', 'fullName', 'username', 'image']
+            };
+        }
+    }
 });
 
 // Article Relations with other Models
