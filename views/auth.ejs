@@ -1,16 +1,92 @@
 <%- include ("./partials/header.ejs") %>
     <main class="w-full h-full p-6 sm:pt-20 lg:pt-32">
         <div class="w-4/5 sm:w-[70%] md:w-[60%] mx-auto transition-all duration-200 h-full flex flex-col items-center justify-center gap-4" id="main-content">
-            <form id="login-form">
-                <label for="user">
-                    <input type="text" placeholder="username or email" name="user" id="user" />
-                </label>
-                <label for="password">
-                    <input type="text" name="password" id="password" placeholder="password" />
-                </label>
-                <button type="submit">Login</button>
+
+            <!-- Login Form -->
+
+            <form 
+                id="login-form" 
+                class="flex flex-col items-center justify-center gap-2"
+                autocomplete="off"
+            >
+                <h2 class="font-bold text-lg">Login with credentials</h2>
+                <% [
+                    {
+                        id: 'user',
+                        placeholder: 'username or email',
+                        type: 'text',
+                        required: true,
+                    },
+                    {
+                        id: 'password',
+                        placeholder: 'password',
+                        type: 'password',
+                        required: true,
+                    }
+                ].forEach((element) => { %>
+                    <label for="<%=element.id%>">
+                        <input 
+                            type="<%=element.type%>" 
+                            placeholder="<%=element.placeholder%>" 
+                            name="<%=element.id%>" 
+                            id="<%=element.id%>" 
+                            <%if(element.required){%> required <%}%>
+                            class="border border-gray-400 rounded px-2 py-1 focus:border-gray-600 focus:outline-none"
+                        />
+                    </label>
+                <% }) %>
+                <button type="submit" class="border border-gray-400 w-fit py-1 px-2 rounded hover:bg-gray-400 hover:text-white focus:bg-gray-400 focus:text-white transition-all duration-200 uppercase">Login</button>
+                <p>New User? <span class="toggle-btn underline text-blue-500 hover:text-blue-600 cursor-pointer transition-all duration-100">Register here!</span></p>
             </form>
-            <form id="register-form"></form>
+
+            <!-- Register Form -->
+
+            <form 
+                id="register-form" 
+                class="hidden flex-col items-center justify-center gap-2"
+                autocomplete="off"
+            >
+                <h2 class="font-bold text-lg">Create new account</h2>
+                <% [
+                    {
+                        id: 'fullName',
+                        placeholder: 'Full Name',
+                        type: 'text',
+                        required: true,
+                    },
+                    {
+                        id: 'username',
+                        placeholder: 'username',
+                        type: 'text',
+                        required: true,
+                    },
+                    {
+                        id: 'email',
+                        placeholder: 'email',
+                        type: 'email',
+                        required: true,
+                    }, 
+                    {
+                        id: 'password',
+                        placeholder: 'password',
+                        type: 'password',
+                        required: true,
+                    }
+                ].forEach((element) => { %>
+                    <label for="<%=element.id%>">
+                        <input 
+                            type="<%=element.type%>" 
+                            placeholder="<%=element.placeholder%>" 
+                            name="<%=element.id%>" 
+                            id="<%=element.id%>" 
+                            <%if(element.required){%> required <%}%>
+                            class="border border-gray-400 rounded px-2 py-1 focus:border-gray-600 focus:outline-none"
+                        />
+                    </label>
+                <% }) %>
+                <button type="submit" class="border border-gray-400 w-fit py-1 px-2 rounded hover:bg-gray-400 hover:text-white focus:bg-gray-400 focus:text-white transition-all duration-200 uppercase">Register</button>
+                <p>Already have an account? <span class="toggle-btn underline text-blue-500 hover:text-blue-600 cursor-pointer transition-all duration-100">Login here!</span></p>
+            </form>
         </div>
     </main>
 <%- include ("./partials/footer.ejs") %>
