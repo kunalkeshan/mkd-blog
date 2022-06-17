@@ -7,7 +7,12 @@
 />
 <!-- Tailwind Output and Common File -->
 <link rel="stylesheet" href="/css/common.css" />
-<link rel="stylesheet" href="/css/all.css" />
+
+<!-- Tailwind CSS To work in development -->
+<% if (process.env.NODE_ENV === 'development') { %>
+	<script src="https://cdn.tailwindcss.com"></script>
+<% } %>
+
 <!-- Validator JS -->
 <!-- https://cdnjs.cloudflare.com/ajax/libs/validator/13.7.0/validator.min.js -->
 <!-- Website SEO -->
@@ -17,14 +22,14 @@
 	content="Share your experience and thoughts using Markdown Blog!"
 />
 <meta name="twitter:card" content="Write articles in markdown and share it with the world!" />
-<meta name="twitter:site" content="@_kunalkeshan" />
+<meta name="twitter:site" content="@_kunalkeshan_" />
 <meta name="twitter:creator" content="@_kunalkeshan_" />
-<meta property="og:type" content="website" />
+<meta property="og:type" content="blog" />
 <meta
 	property="og:title"
 	content="Markdown Blog, share your thoughts and experiences"
 />
-<!-- <meta property="og:url" content="https://www./" /> -->
+<!-- <meta property="og:url" content="" /> -->
 <meta
 	property="og:description"
 	content="Write articles in markdown and share it with the world."

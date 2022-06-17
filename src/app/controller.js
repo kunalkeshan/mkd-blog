@@ -98,15 +98,24 @@ indexController.redirectToIndex = (req, res) => {
 	return res.redirect('/');
 };
 
-/**
-* @description Render Home Page
-* @route GET /home
-* @data None
-* @access Public
-*/
+/* ====================== 
+	AUTHENTICATED CONTROLLERS
+   ====================== */
+
+// Semi authenticated, user check will be done in the route
+indexController.toAuth = (req, res) => {
+	if (req.user) {
+		return res.redirect('/home');
+	}
+	return res.render('auth', {
+		page: { title: 'Auth | mkd-blog', link: 'auth', user: req.user ? req.user : null },
+	})
+}
+
+// Semi authenticated, user check will be done in the route
 indexController.toHome = (req, res) => {
 	return res.render('home', {
-		page: { title: 'Home', link: 'home' },
+		page: { title: 'Home | mkd-blog', link: 'home', user: req?.user },
 	});
 };
 

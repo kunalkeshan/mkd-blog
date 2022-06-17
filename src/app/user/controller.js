@@ -160,31 +160,34 @@ userController.registerUser = async (req, res) => {
  * @access Public
  */
 userController.loginUser = async (req, res) => {
-	let { email = '', username = '', password } = req.body;
+	let { user, password } = req.body;
 	try {
+		console.log(req.body)
 		// Pre Check
 		password = password && typeof password === 'string' ? password : false;
+		user = user && typeof user === 'string' ? user : false;
 		if (!password)
 			throw new Error("Request Body should contain {password: 'String'}");
+		if (!user) throw new Error("Request Body should contain {user: 'String'}");
 
 		// Get User
-		let user = await User.findOne({
+		let _user = await User.findOne({
 			where: {
-				[Op.or]: [{ email }, { username }],
+				[Op.or]: [{ email: user }, { username: user }],
 			}
 		});
-		if (!user) throw new Error('No Such User Exists');
+		if (!_user) throw new Error('No Such User Exists');
 
 		// Authenticate user w password
-		const checkPassword = await user.authenticateUser(password);
+		const checkPassword = await _user.authenticateUser(password);
 		if (!checkPassword) throw new Error('Invalid Password!');
 
 		// Generate Auth Token
-		const token = user.generateAuthToken();
+		const token = _user.generateAuthToken();
 
 		// Update User before sending
-		await user.update({ lastLogin: Date.now() });
-		user = user.generateSanitizedUser();
+		await _user.update({ lastLogin: Date.now() });
+		_user = _user.generateSanitizedUser();
 
 		// Sending response
 		res.cookie('authToken', token, {
@@ -194,7 +197,7 @@ userController.loginUser = async (req, res) => {
 		});
 		return res.status(200).json({
 			message: 'Login Successful!',
-			data: { user },
+			data: { user: _user },
 			success: true,
 		});
 	} catch (error) {
@@ -555,7 +558,7 @@ userController.toUserEdit = async (req, res) => {
 				title: `Mkd Blog`,
 				link: 'profile-edit',
 			},
-			data: {error},
+			data: { error },
 			success: false,
 		});
 	}
