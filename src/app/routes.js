@@ -33,9 +33,9 @@ Router.get("/home", checkJwt, indexController.toHome);
 
 Router.get("/index", checkJwt, indexController.redirectToIndex);
 
-Router.get("/auth", indexController.toAuth);
+Router.get("/auth", checkJwt, indexController.toAuth);
 
-Router.get('/search', indexController.toSearch);
+Router.get('/search', checkJwt, indexController.toSearch);
 
 /* ====================== 
     AUTHENTICATED ROUTES
