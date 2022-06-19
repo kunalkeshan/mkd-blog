@@ -1,5 +1,23 @@
-<%- include ("./partials/headerLoggedIn.ejs") %>
-    <div class="w-full p-6">        
-        
+<% if (user) { %>
+    <%- include ("./partials/headerLoggedIn.ejs") %>
+<% } else { %>
+    <%- include ("./partials/headerLoggedOut.ejs") %>
+<% } %>
+
+    <div 
+        <% if (user) { %>
+            class="w-full flex items-center justify-center h-full"
+        <% } else { %>
+            class="w-full p-6 h-full"
+        <% } %>
+    >        
+
+    <% if (user) { %>
+        <%- include ("./components/sidebar.ejs") %>
+    <% } %>
+        <div class="flex-[0.9]">
+
+        </div>
     </div>
+
 <%- include ("./partials/footer.ejs") %>

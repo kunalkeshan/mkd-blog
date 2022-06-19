@@ -1,0 +1,38 @@
+<div class="p-1 h-full flex-[0.1] border-r-2  shadow-lg">
+    <ul 
+        class="flex flex-col items-center justify-center h-full gap-2"
+    >
+        <% [
+            {
+                class: 'active',
+                icon: 'home_outlined',
+                link: '/home',
+            }, 
+            {
+                class: '',
+                icon: 'article_outlined',
+                link: '/article',
+            },
+            {
+                class: '',
+                icon: 'settings_outlined',
+                link: '/settings',
+            },
+            {
+                class: 'image',
+                icon: user.image,
+                link: '/profile'
+            },
+        ].forEach((element) => { %>
+            <li class='<%=element.class%> scale-75 hover:border hover:border-gray-600 rounded-full grid place-items-center p-1 cursor-pointer hover:bg-gray-200 transition-all duration-100' >
+                <a href="<%=element.link%>">
+                    <% if(element.class === 'image') { %>
+                        <img src='<%= element.icon %>' alt='<%= user.fullName %>' class="w-10 h-10 mx-auto rounded-full" />
+                    <% } else { %>
+                        <%- include (`../icons/${element.icon}.ejs`) %>
+                    <% } %>
+                </a>
+            </li>
+        <% }) %>
+    </ul>
+</div>

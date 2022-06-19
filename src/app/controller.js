@@ -108,14 +108,17 @@ indexController.toAuth = (req, res) => {
 		return res.redirect('/home');
 	}
 	return res.render('auth', {
-		page: { title: 'Auth | mkd-blog', link: 'auth', user: req.user ? req.user : null },
+		page: { title: 'Auth | mkd-blog', link: 'auth' },
+		user: req.user ? req.user : null,
 	})
 }
 
 // Semi authenticated, user check will be done in the route
 indexController.toHome = (req, res) => {
+	console.log({ user: req.user ? req.user : false })
 	return res.render('home', {
-		page: { title: 'Home | mkd-blog', link: 'home', user: req?.user },
+		page: { title: 'Home | mkd-blog', link: 'home' },
+		user: req.user ? req.user : null,
 	});
 };
 
